@@ -27,7 +27,7 @@ public interface AgentRuleMapper extends BaseMapperX<AgentRuleDO> {
     }
 
     @Select("<script>" +
-            "SELECT ar.*, pm.name as merchant_name " +
+            "SELECT ar.*, pm.name as merchantName " +
             "FROM agent_rule ar " +
             "LEFT JOIN merchant_info pm ON pm.id = ar.merchant_id AND pm.deleted = 0 " +
             "WHERE ar.deleted = 0 " +

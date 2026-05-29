@@ -62,7 +62,9 @@ public class ShareChargeOrderServiceImpl implements ShareChargeOrderService {
         @Override
     public ShareChargeOrderChartRespVO getShareChargeOrderChart(ShareChargeOrderChartReqVO v) {
         ShareChargeOrderChartRespVO resp = new ShareChargeOrderChartRespVO();
-        LocalDateTime start = v.getStartTime() != null ? v.getStartTime() : LocalDateTime.now().minusDays(30);
+        // 默认查全量，注释掉30天限制
+        // LocalDateTime start = v.getStartTime() != null ? v.getStartTime() : LocalDateTime.now().minusDays(30);
+        LocalDateTime start = v.getStartTime();
         LocalDateTime end   = v.getEndTime()   != null ? v.getEndTime()   : LocalDateTime.now();
         LocalDateTime todayStart = LocalDateTime.now().withHour(0).withMinute(0).withSecond(0).withNano(0);
         LocalDateTime now = LocalDateTime.now();
@@ -168,7 +170,7 @@ public class ShareChargeOrderServiceImpl implements ShareChargeOrderService {
         invoice.setOrderId(reqVO.getId());
         invoice.setTitle(reqVO.getInvoiceTitle());
         invoice.setTaxNo(reqVO.getInvoiceTaxNo());
-        invoice.setReserve1(reqVO.getInvoiceEmail());
+        invoice.setEmail(reqVO.getInvoiceEmail());
         invoice.setAmount(order.getAmount());
         invoice.setStatus("pending_audit");
         invoice.setRemark(reqVO.getRemark());

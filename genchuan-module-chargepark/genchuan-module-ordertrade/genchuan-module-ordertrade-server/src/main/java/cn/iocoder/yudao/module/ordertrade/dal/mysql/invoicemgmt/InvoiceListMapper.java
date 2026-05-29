@@ -63,7 +63,7 @@ public interface InvoiceListMapper extends BaseMapperX<InvoiceListDO> {
     default Map<Long, String> selectStatusMapByOrderIds(List<Long> ids) {
         if (ids == null || ids.isEmpty()) return Collections.emptyMap();
         return selectByOrderIds(ids).stream()
-                .collect(Collectors.toMap(InvoiceListDO::getOrderId, InvoiceListDO::getStatus));
+                .collect(Collectors.toMap(InvoiceListDO::getOrderId, InvoiceListDO::getStatus, (existing, replacement) -> existing));
     }
 
     @Select("<script>" +

@@ -46,15 +46,15 @@ public class ArrearRecordServiceImpl implements ArrearRecordService {
     }
     @Override public ArrearRecordChartRespVO getArrearRecordChart(ArrearRecordChartReqVO v)  {
         ArrearRecordChartRespVO resp = new ArrearRecordChartRespVO();
-        LocalDateTime start = v.getStartTime() != null ? v.getStartTime() : LocalDateTime.now().minusDays(30);
+        // 默认查全量，注释掉30天限制
+        // LocalDateTime start = v.getStartTime() != null ? v.getStartTime() : LocalDateTime.now().minusDays(30);
+        LocalDateTime start = v.getStartTime();
         LocalDateTime end   = v.getEndTime()   != null ? v.getEndTime()   : LocalDateTime.now();
-        LocalDateTime todayStart = LocalDateTime.now().withHour(0).withMinute(0).withSecond(0).withNano(0);
-        LocalDateTime now = LocalDateTime.now();
         resp.setTrendData(arrearRecordMapper.selectTrend(start, end));
         ArrearRecordChartRespVO.CardData card = new ArrearRecordChartRespVO.CardData();
-        card.setTotalArrearAmount(arrearRecordMapper.selectTotalArrearAmount());
-        Long all     = arrearRecordMapper.selectCountByStatus(null);
-        Long cleared = arrearRecordMapper.selectCountByStatus("cleared");
+        card.setTotalArrearAmount(arrearRecordMapper.selectTotalArrearAmount(start, end));
+        Long all     = arrearRecordMapper.selectCountByStatus(null, start, end);
+        Long cleared = arrearRecordMapper.selectCountByStatus("cleared", start, end);
         if (all != null && all > 0) {
             card.setClearRate(new BigDecimal(cleared).multiply(BigDecimal.valueOf(100))
                     .divide(new BigDecimal(all), 1, java.math.RoundingMode.HALF_UP));

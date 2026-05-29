@@ -57,8 +57,12 @@ public interface RefundApplyMapper extends BaseMapperX<RefundApplyDO> {
 
     @Select("<script>" +
             "SELECT COUNT(*) FROM refund_apply WHERE deleted = 0 " +
+            "<if test='startTime != null'> AND apply_time &gt;= #{startTime} </if>" +
+            "<if test='endTime != null'>   AND apply_time &lt;= #{endTime}   </if>" +
             "<if test='status != null'> AND status = #{status} </if>" +
             "</script>")
-    Long selectCountByStatus(@Param("status") String status);
+    Long selectCountByStatus(@Param("status") String status,
+                             @Param("startTime") LocalDateTime startTime,
+                             @Param("endTime") LocalDateTime endTime);
 
 }

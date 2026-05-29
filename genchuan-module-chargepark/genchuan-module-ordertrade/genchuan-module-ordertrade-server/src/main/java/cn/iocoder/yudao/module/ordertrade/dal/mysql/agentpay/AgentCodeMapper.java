@@ -19,7 +19,7 @@ public interface AgentCodeMapper extends BaseMapperX<AgentCodeDO> {
 
 
     @Select("<script>" +
-            "SELECT pm.name as merchant_name, agr.name as rule_name, ar.* " +
+            "SELECT pm.name as merchantName, agr.name as ruleName, ar.* " +
             "FROM agent_code ar " +
             "LEFT JOIN merchant_info pm ON pm.id = ar.merchant_id AND pm.deleted = 0 " +
             "LEFT JOIN agent_rule agr ON agr.id = ar.rule_id AND agr.deleted = 0 " +

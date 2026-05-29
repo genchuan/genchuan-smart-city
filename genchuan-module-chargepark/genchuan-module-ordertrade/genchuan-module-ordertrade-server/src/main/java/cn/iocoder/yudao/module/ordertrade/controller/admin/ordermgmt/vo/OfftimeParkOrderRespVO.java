@@ -1,6 +1,7 @@
 package cn.iocoder.yudao.module.ordertrade.controller.admin.ordermgmt.vo;
 
 import cn.idev.excel.annotation.ExcelProperty;
+import cn.iocoder.yudao.module.ordertrade.enums.InvoiceListStatusEnum;
 import cn.iocoder.yudao.module.ordertrade.enums.ParkOrderStatusEnum;
 import cn.iocoder.yudao.module.ordertrade.enums.PayMethodEnum;
 import cn.iocoder.yudao.module.ordertrade.framework.excel.EnumExcelConverter;
@@ -78,6 +79,8 @@ public class OfftimeParkOrderRespVO {
     private Long operatorId;
 
     @Schema(description = "开票状态（null-未申请，pending_audit-待审核，pending_invoice-待开票，invoiced-已开票，rejected-已驳回）")
+    @ExcelProperty(value = "开票状态", converter = EnumExcelConverter.class)
+    @EnumFormat(InvoiceListStatusEnum.class)
     private String invoiceStatus;
 
 /*

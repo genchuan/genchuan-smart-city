@@ -2,8 +2,10 @@ package cn.iocoder.yudao.module.ordertrade.controller.admin.debtcollect;
 
 import cn.iocoder.yudao.framework.apilog.core.annotation.ApiAccessLog;
 import cn.iocoder.yudao.framework.common.pojo.CommonResult;
+import cn.iocoder.yudao.framework.common.pojo.PageParam;
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
 import cn.iocoder.yudao.framework.common.util.object.BeanUtils;
+import cn.iocoder.yudao.framework.excel.core.util.ExcelUtils;
 import cn.iocoder.yudao.module.ordertrade.controller.admin.debtcollect.vo.*;
 import cn.iocoder.yudao.module.ordertrade.dal.dataobject.debtcollect.CollectConfigDO;
 import cn.iocoder.yudao.module.ordertrade.service.debtcollect.CollectConfigService;
@@ -11,10 +13,15 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.annotation.Resource;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.IOException;
+import java.util.List;
+
+import static cn.iocoder.yudao.framework.apilog.core.enums.OperateTypeEnum.EXPORT;
 import static cn.iocoder.yudao.framework.apilog.core.enums.OperateTypeEnum.UPDATE;
 import static cn.iocoder.yudao.framework.common.pojo.CommonResult.success;
 
@@ -88,7 +95,7 @@ public class CollectConfigController {
         PageResult<CollectConfigDO> pageResult = collectConfigService.getCollectConfigPage(pageReqVO);
         return success(BeanUtils.toBean(pageResult, CollectConfigRespVO.class));
     }
-/*
+
     @GetMapping("/export")
     @Operation(summary = "导出追缴配置 Excel")
     @ApiAccessLog(operateType = EXPORT)
@@ -99,17 +106,6 @@ public class CollectConfigController {
         ExcelUtils.write(response, "追缴配置.xls", "数据", CollectConfigRespVO.class,
                 BeanUtils.toBean(list, CollectConfigRespVO.class));
     }
-
-    @GetMapping("/batch-export")
-    @Operation(summary = "批量导出追缴配置 Excel（芋道原生导出风格）")
-    @ApiAccessLog(operateType = EXPORT)
-    public void batchExportCollectConfigExcel(@Valid CollectConfigPageReqVO pageReqVO,
-                                      HttpServletResponse response) throws IOException {
-        pageReqVO.setPageSize(PageParam.PAGE_SIZE_NONE);
-        List<CollectConfigDO> list = collectConfigService.getCollectConfigPage(pageReqVO).getList();
-        ExcelUtils.write(response, "追缴配置批量导出.xls", "数据", CollectConfigRespVO.class,
-                BeanUtils.toBean(list, CollectConfigRespVO.class));
-    }*/
 
     // ==================== ② 业务操作接口 ====================
 

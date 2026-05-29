@@ -2,6 +2,7 @@ package cn.iocoder.yudao.module.ordertrade.dal.dataobject.agentpay;
 
 import cn.iocoder.yudao.framework.mybatis.core.dataobject.BaseDO;
 import com.baomidou.mybatisplus.annotation.KeySequence;
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
@@ -25,6 +26,7 @@ public class AgentOrderDO extends BaseDO {
 
     private Long merchantId;
 
+    @TableField(exist = false)
     private String merchantName;
 
     private String carNo;

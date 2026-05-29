@@ -51,6 +51,10 @@ public class ReconcileBillRespVO {
     @ExcelProperty("对账人ID")
     private Long reconcilerId;
 
+    @Schema(description = "对账人")
+    @ExcelProperty("对账人")
+    private String updater;
+
     @Schema(description = "对账时间")
     @ExcelProperty("对账时间")
     private LocalDateTime reconcileTime;

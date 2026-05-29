@@ -82,18 +82,18 @@ public class AgentRecordServiceImpl implements AgentRecordService {
     @Override
     public AgentRecordChartRespVO getAgentRecordChart(AgentRecordChartReqVO chartReqVO) {
         AgentRecordChartRespVO resp = new AgentRecordChartRespVO();
-        LocalDateTime start = chartReqVO.getStartTime() != null ? chartReqVO.getStartTime() : LocalDateTime.now().minusDays(30);
+        // 默认查全量，注释掉30天限制
+        // LocalDateTime start = chartReqVO.getStartTime() != null ? chartReqVO.getStartTime() : LocalDateTime.now().minusDays(30);
+        LocalDateTime start = chartReqVO.getStartTime();
         LocalDateTime end = chartReqVO.getEndTime() != null ? chartReqVO.getEndTime() : LocalDateTime.now();
-        LocalDateTime todayStart = LocalDateTime.now().withHour(0).withMinute(0).withSecond(0).withNano(0);
-        LocalDateTime now = LocalDateTime.now();
 
         resp.setTrendData(agentRecordMapper.selectTrend(start, end));
 
         AgentRecordChartRespVO.CardData card = new AgentRecordChartRespVO.CardData();
-        card.setTodayCount(agentRecordMapper.selectTodayCount(todayStart, now));
+        card.setTodayCount(agentRecordMapper.selectTodayCount(start, end));
 
-        Long normalCount = agentRecordMapper.selectNormalCount();
-        Long totalCount = agentRecordMapper.selectTotalCount();
+        Long normalCount = agentRecordMapper.selectNormalCount(start, end);
+        Long totalCount = agentRecordMapper.selectTotalCount(start, end);
         if (totalCount != null && totalCount > 0) {
             card.setSuccessRate(new BigDecimal(normalCount).multiply(BigDecimal.valueOf(100))
                     .divide(new BigDecimal(totalCount), 1, RoundingMode.HALF_UP));

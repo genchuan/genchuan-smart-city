@@ -2,6 +2,7 @@ package cn.iocoder.yudao.module.ordertrade.service.invoicemgmt;
 
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
 import cn.iocoder.yudao.framework.common.util.object.BeanUtils;
+import cn.iocoder.yudao.framework.security.core.util.SecurityFrameworkUtils;
 import cn.iocoder.yudao.module.ordertrade.controller.admin.invoicemgmt.vo.*;
 import cn.iocoder.yudao.module.ordertrade.dal.dataobject.invoicemgmt.InvoiceConfigDO;
 import cn.iocoder.yudao.module.ordertrade.dal.mysql.invoicemgmt.InvoiceConfigMapper;
@@ -63,6 +64,8 @@ public class InvoiceConfigServiceImpl implements InvoiceConfigService {
         InvoiceConfigDO update = new InvoiceConfigDO();
         update.setId(id);
         update.setStatus("enabled");
+        update.setAuditorId(SecurityFrameworkUtils.getLoginUserId());
+        update.setUpdater(SecurityFrameworkUtils.getLoginUserNickname());
         update.setAuditTime(LocalDateTime.now());
         invoiceConfigMapper.updateById(update);
     }

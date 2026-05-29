@@ -8,7 +8,9 @@ import cn.iocoder.yudao.framework.security.core.util.SecurityFrameworkUtils;
 import cn.iocoder.yudao.module.ordertrade.controller.admin.agentpay.vo.*;
 import cn.iocoder.yudao.module.ordertrade.controller.admin.ordermgmt.vo.IdReqVO;
 import cn.iocoder.yudao.module.ordertrade.dal.dataobject.agentpay.AgentOrderDO;
+import cn.iocoder.yudao.module.ordertrade.dal.dataobject.invoicemgmt.InvoiceListDO;
 import cn.iocoder.yudao.module.ordertrade.dal.mysql.agentpay.AgentOrderMapper;
+import cn.iocoder.yudao.module.ordertrade.dal.mysql.invoicemgmt.InvoiceListMapper;
 import cn.iocoder.yudao.module.ordertrade.framework.tool.OrderUtils;
 import jakarta.annotation.Resource;
 import org.springframework.stereotype.Service;
@@ -27,6 +29,9 @@ public class AgentOrderServiceImpl implements AgentOrderService {
 
     @Resource
     private AgentOrderMapper agentOrderMapper;
+
+    @Resource
+    private InvoiceListMapper invoiceListMapper;
 
     @Override
     public Long createAgentOrder(AgentOrderSaveReqVO createReqVO) {
@@ -84,13 +89,30 @@ public class AgentOrderServiceImpl implements AgentOrderService {
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public void invoiceAgentOrder(IdReqVO reqVO) {
+    public void invoiceAgentOrder(AgentOrderInvoiceReqVO reqVO) {
         AgentOrderDO order = agentOrderMapper.selectById(reqVO.getId());
         if (order == null) throw exception(AGENT_ORDER_NOT_EXISTS);
         if (!"paid".equals(order.getStatus()) && !"completed".equals(order.getStatus())) {
             throw exception(AGENT_ORDER_STATUS_CANNOT_INVOICE);
         }
-        // 开票操作，实际由发票模块处理
+        if (invoiceListMapper.selectByOrderId(reqVO.getId()) != null) {
+            throw exception(INVOICE_LIST_ALREADY_APPLIED);
+        }
+        InvoiceListDO invoice = new InvoiceListDO();
+        invoice.setInvoiceNo("INV" + java.util.UUID.randomUUID().toString().replace("-", "").substring(0, 14).toUpperCase());
+        invoice.setOrderId(reqVO.getId());
+        invoice.setTitle(reqVO.getInvoiceTitle());
+        invoice.setTaxNo(reqVO.getInvoiceTaxNo());
+        invoice.setEmail(reqVO.getInvoiceEmail());
+        invoice.setAmount(order.getAmount());
+        invoice.setStatus("pending_audit");
+        invoice.setRemark(reqVO.getRemark());
+        invoiceListMapper.insert(invoice);
+
+        AgentOrderDO update = new AgentOrderDO();
+        update.setId(reqVO.getId());
+        update.setInvoiceId(invoice.getId());
+        agentOrderMapper.updateById(update);
     }
 
     @Override
@@ -109,7 +131,9 @@ public class AgentOrderServiceImpl implements AgentOrderService {
     @Override
     public AgentOrderChartRespVO getAgentOrderChart(AgentOrderChartReqVO chartReqVO) {
         AgentOrderChartRespVO resp = new AgentOrderChartRespVO();
-        LocalDateTime start = chartReqVO.getStartTime() != null ? chartReqVO.getStartTime() : LocalDateTime.now().minusDays(30);
+        // 默认查全量，注释掉30天限制
+        // LocalDateTime start = chartReqVO.getStartTime() != null ? chartReqVO.getStartTime() : LocalDateTime.now().minusDays(30);
+        LocalDateTime start = chartReqVO.getStartTime();
         LocalDateTime end = chartReqVO.getEndTime() != null ? chartReqVO.getEndTime() : LocalDateTime.now();
         LocalDateTime todayStart = LocalDateTime.now().withHour(0).withMinute(0).withSecond(0).withNano(0);
         LocalDateTime now = LocalDateTime.now();

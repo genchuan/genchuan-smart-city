@@ -88,7 +88,7 @@ public class InvoiceListServiceImpl implements InvoiceListService {
     public void rejectInvoiceList(IdReqVO reqVO) {
         InvoiceListDO invoice = invoiceListMapper.selectById(reqVO.getId());
         if (invoice == null) throw exception(INVOICE_LIST_NOT_EXISTS);
-        if (!"pending".equals(invoice.getStatus())) throw exception(INVOICE_LIST_STATUS_CANNOT_REJECT);
+        if (!"pending_audit".equals(invoice.getStatus())) throw exception(INVOICE_LIST_STATUS_CANNOT_REJECT);
         InvoiceListDO update = new InvoiceListDO();
         update.setId(reqVO.getId());
         update.setStatus("rejected");
@@ -107,6 +107,7 @@ public class InvoiceListServiceImpl implements InvoiceListService {
         update.setId(reqVO.getId());
         update.setStatus("invoiced");
         update.setInvoiceTime(LocalDateTime.now());
+        update.setDownloadUrl("/api/invoice/download/" + invoice.getInvoiceNo());
         invoiceListMapper.updateById(update);
     }
 
@@ -137,6 +138,7 @@ public class InvoiceListServiceImpl implements InvoiceListService {
     public void reapplyInvoiceList(IdReqVO reqVO) {
         InvoiceListDO invoice = invoiceListMapper.selectById(reqVO.getId());
         if (invoice == null) throw exception(INVOICE_LIST_NOT_EXISTS);
+        if (!"rejected".equals(invoice.getStatus())) throw exception(INVOICE_LIST_STATUS_CANNOT_REAPPLY);
         InvoiceListDO update = new InvoiceListDO();
         update.setId(reqVO.getId());
         update.setStatus("pending_audit");
@@ -161,7 +163,9 @@ public class InvoiceListServiceImpl implements InvoiceListService {
     @Override
     public InvoiceListChartRespVO getInvoiceListChart(InvoiceListChartReqVO chartReqVO) {
         InvoiceListChartRespVO resp = new InvoiceListChartRespVO();
-        LocalDateTime start = chartReqVO.getStartTime() != null ? chartReqVO.getStartTime() : LocalDateTime.now().minusDays(30);
+        // 默认查全量，注释掉30天限制
+        // LocalDateTime start = chartReqVO.getStartTime() != null ? chartReqVO.getStartTime() : LocalDateTime.now().minusDays(30);
+        LocalDateTime start = chartReqVO.getStartTime();
         LocalDateTime end = chartReqVO.getEndTime() != null ? chartReqVO.getEndTime() : LocalDateTime.now();
         LocalDateTime todayStart = LocalDateTime.now().withHour(0).withMinute(0).withSecond(0).withNano(0);
         LocalDateTime now = LocalDateTime.now();

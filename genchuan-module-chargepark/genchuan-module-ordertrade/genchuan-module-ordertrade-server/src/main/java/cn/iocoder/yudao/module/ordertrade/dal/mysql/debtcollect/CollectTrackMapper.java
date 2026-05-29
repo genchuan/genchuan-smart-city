@@ -51,11 +51,21 @@ public interface CollectTrackMapper extends BaseMapperX<CollectTrackDO> {
 
     @Select("<script>" +
             "SELECT COUNT(*) FROM collect_track WHERE deleted = 0 " +
+            "<if test='startTime != null'> AND create_time &gt;= #{startTime} </if>" +
+            "<if test='endTime != null'>   AND create_time &lt;= #{endTime}   </if>" +
             "<if test='status != null'> AND status = #{status} </if>" +
             "</script>")
-    Long selectCountByStatus(@Param("status") String status);
+    Long selectCountByStatus(@Param("status") String status,
+                             @Param("startTime") LocalDateTime startTime,
+                             @Param("endTime") LocalDateTime endTime);
 
-    @Select("SELECT collect_method AS method, COUNT(*) AS count FROM collect_track WHERE deleted = 0 GROUP BY collect_method")
-    List<Map<String, Object>> selectGroupByCollectMethod();
+    @Select("<script>" +
+            "SELECT collect_method AS method, COUNT(*) AS count FROM collect_track WHERE deleted = 0 " +
+            "<if test='startTime != null'> AND create_time &gt;= #{startTime} </if>" +
+            "<if test='endTime != null'>   AND create_time &lt;= #{endTime}   </if>" +
+            "GROUP BY collect_method" +
+            "</script>")
+    List<Map<String, Object>> selectGroupByCollectMethod(@Param("startTime") LocalDateTime startTime,
+                                                         @Param("endTime") LocalDateTime endTime);
 
 }

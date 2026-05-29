@@ -128,7 +128,7 @@ public class CollectTrackController {
     @PutMapping("/transfer")
     @ApiAccessLog(operateType = UPDATE)  // ← 加这一行
     @Operation(summary = "转派")
-    public CommonResult<Boolean> transferCollectTrack(@Valid @RequestBody IdReqVO reqVO) {
+    public CommonResult<Boolean> transferCollectTrack(@Valid @RequestBody CollectTrackTransferReqVO reqVO) {
         collectTrackService.transferCollectTrack(reqVO);
         return success(true);
     }

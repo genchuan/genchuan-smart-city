@@ -19,8 +19,9 @@ import java.util.Map;
 public interface InvoiceAuditMapper extends BaseMapperX<InvoiceAuditDO> {
 
     @Select("<script>" +
-            "SELECT ia.* " +
+            "SELECT ia.*, il.invoice_no as invoiceNo " +
             "FROM invoice_audit ia " +
+            "LEFT JOIN invoice_list il ON ia.apply_id = il.id " +
             "WHERE ia.deleted = 0 " +
             "<if test='req.applicantId != null'>AND ia.applicant_id = #{req.applicantId} </if>" +
             "<if test='req.creator != null and req.creator != \"\"'>AND ia.creator LIKE CONCAT('%', #{req.creator}, '%') </if>" +
@@ -53,4 +54,10 @@ public interface InvoiceAuditMapper extends BaseMapperX<InvoiceAuditDO> {
 
     @Select("SELECT COUNT(*) FROM invoice_audit WHERE deleted = 0")
     Long selectTotalCount();
+
+    @Select("SELECT ia.*, il.invoice_no as invoiceNo " +
+            "FROM invoice_audit ia " +
+            "LEFT JOIN invoice_list il ON ia.apply_id = il.id " +
+            "WHERE ia.id = #{id} AND ia.deleted = 0")
+    InvoiceAuditDO selectByIdWithInvoice(Long id);
 }

@@ -19,7 +19,7 @@ public class AgentRuleSaveReqVO {
     private String name;
 
     @Schema(description = "商户ID", requiredMode = Schema.RequiredMode.REQUIRED)
-    @NotNull(message = "商户ID不能为空")
+    @NotNull(message = "商户名称不能为空")
     private Long merchantId;
 
     @Schema(description = "代付类型：merchant/enterprise/public", requiredMode = Schema.RequiredMode.REQUIRED)

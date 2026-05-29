@@ -23,6 +23,9 @@ public class InvoiceAuditDO extends BaseDO {
 
     private Long applyId;
 
+    @TableField(exist = false)
+    private String invoiceNo;
+
     private Long applicantId;
 
     @TableField(exist = false)

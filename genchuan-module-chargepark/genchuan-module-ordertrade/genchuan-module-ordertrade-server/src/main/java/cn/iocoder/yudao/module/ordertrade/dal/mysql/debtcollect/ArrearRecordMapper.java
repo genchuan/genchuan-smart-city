@@ -61,11 +61,20 @@ public interface ArrearRecordMapper extends BaseMapperX<ArrearRecordDO> {
 
     @Select("<script>" +
             "SELECT COUNT(*) FROM arrear_record WHERE deleted = 0 " +
+            "<if test='startTime != null'> AND create_time &gt;= #{startTime} </if>" +
+            "<if test='endTime != null'>   AND create_time &lt;= #{endTime}   </if>" +
             "<if test='status != null'> AND status = #{status} </if>" +
             "</script>")
-    Long selectCountByStatus(@Param("status") String status);
+    Long selectCountByStatus(@Param("status") String status,
+                             @Param("startTime") LocalDateTime startTime,
+                             @Param("endTime") LocalDateTime endTime);
 
-    @Select("SELECT IFNULL(SUM(arrear_amount), 0) FROM arrear_record WHERE deleted = 0")
-    BigDecimal selectTotalArrearAmount();
+    @Select("<script>" +
+            "SELECT IFNULL(SUM(arrear_amount), 0) FROM arrear_record WHERE deleted = 0 " +
+            "<if test='startTime != null'> AND create_time &gt;= #{startTime} </if>" +
+            "<if test='endTime != null'>   AND create_time &lt;= #{endTime}   </if>" +
+            "</script>")
+    BigDecimal selectTotalArrearAmount(@Param("startTime") LocalDateTime startTime,
+                                       @Param("endTime") LocalDateTime endTime);
 
 }

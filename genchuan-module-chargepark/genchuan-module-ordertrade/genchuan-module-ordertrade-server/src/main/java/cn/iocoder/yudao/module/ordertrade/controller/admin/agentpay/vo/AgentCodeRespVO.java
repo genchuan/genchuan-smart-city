@@ -70,11 +70,11 @@ public class AgentCodeRespVO {
     @ExcelProperty("备注")
     private String remark;
 
-    @Schema(description = "备用字段1")
+    /*@Schema(description = "备用字段1")
     private String reserve1;
 
     @Schema(description = "备用字段2")
-    private String reserve2;
+    private String reserve2;*/
 
     @Schema(description = "创建者")
     @ExcelProperty("创建者")
@@ -85,5 +85,6 @@ public class AgentCodeRespVO {
     private LocalDateTime createTime;
 
     @Schema(description = "更新时间")
+    @ExcelProperty("更新时间")
     private LocalDateTime updateTime;
 }

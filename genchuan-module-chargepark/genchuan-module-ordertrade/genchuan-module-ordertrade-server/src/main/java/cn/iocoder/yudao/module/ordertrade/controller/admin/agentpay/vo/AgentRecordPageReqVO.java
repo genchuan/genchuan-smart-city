@@ -20,8 +20,8 @@ public class AgentRecordPageReqVO extends PageParam {
     @Schema(description = "记录编号，模糊查询")
     private String recordNo;
 
-    @Schema(description = "关联订单ID")
-    private Long orderId;
+    @Schema(description = "订单编号，模糊查询")
+    private String orderNo;
 
 
     @Schema(description = "商户ID")

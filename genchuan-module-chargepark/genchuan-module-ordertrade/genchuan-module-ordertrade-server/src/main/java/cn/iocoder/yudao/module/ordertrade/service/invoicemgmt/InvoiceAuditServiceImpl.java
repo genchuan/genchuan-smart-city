@@ -4,6 +4,7 @@ import cn.iocoder.yudao.framework.common.pojo.PageResult;
 import cn.iocoder.yudao.framework.common.util.object.BeanUtils;
 import cn.iocoder.yudao.framework.security.core.util.SecurityFrameworkUtils;
 import cn.iocoder.yudao.module.ordertrade.controller.admin.invoicemgmt.vo.*;
+import cn.iocoder.yudao.module.ordertrade.enums.InvoiceAuditStatusEnum;
 import cn.iocoder.yudao.module.ordertrade.controller.admin.ordermgmt.vo.IdReqVO;
 import cn.iocoder.yudao.module.ordertrade.dal.dataobject.invoicemgmt.InvoiceAuditDO;
 import cn.iocoder.yudao.module.ordertrade.dal.mysql.invoicemgmt.InvoiceAuditMapper;
@@ -32,7 +33,7 @@ public class InvoiceAuditServiceImpl implements InvoiceAuditService {
     public Long createInvoiceAudit(InvoiceAuditSaveReqVO createReqVO) {
         InvoiceAuditDO obj = BeanUtils.toBean(createReqVO, InvoiceAuditDO.class);
         if (obj.getStatus() == null) {
-            obj.setStatus("pending");
+            obj.setStatus(InvoiceAuditStatusEnum.PENDING.getValue());
         }
         if (obj.getApplyTime() == null) {
             obj.setApplyTime(LocalDateTime.now());
@@ -55,7 +56,7 @@ public class InvoiceAuditServiceImpl implements InvoiceAuditService {
 
     @Override
     public InvoiceAuditDO getInvoiceAudit(Long id) {
-        return invoiceAuditMapper.selectById(id);
+        return invoiceAuditMapper.selectByIdWithInvoice(id);
     }
 
     @Override
@@ -70,11 +71,12 @@ public class InvoiceAuditServiceImpl implements InvoiceAuditService {
     public void approveInvoiceAudit(IdReqVO reqVO) {
         InvoiceAuditDO audit = invoiceAuditMapper.selectById(reqVO.getId());
         if (audit == null) throw exception(INVOICE_AUDIT_NOT_EXISTS);
-        if (!"pending".equals(audit.getStatus())) throw exception(INVOICE_AUDIT_STATUS_CANNOT_APPROVE);
+        if (!InvoiceAuditStatusEnum.PENDING.getValue().equals(audit.getStatus())) throw exception(INVOICE_AUDIT_STATUS_CANNOT_APPROVE);
         InvoiceAuditDO update = new InvoiceAuditDO();
         update.setId(reqVO.getId());
-        update.setStatus("approved");
+        update.setStatus(InvoiceAuditStatusEnum.APPROVED.getValue());
         update.setAuditorId(SecurityFrameworkUtils.getLoginUserId());
+        update.setUpdater(SecurityFrameworkUtils.getLoginUserNickname());
         update.setAuditTime(LocalDateTime.now());
         update.setAuditResult(reqVO.getRemark() != null ? reqVO.getRemark() : "审核通过");
         invoiceAuditMapper.updateById(update);
@@ -85,10 +87,10 @@ public class InvoiceAuditServiceImpl implements InvoiceAuditService {
     public void rejectInvoiceAudit(InvoiceAuditRejectReqVO reqVO) {
         InvoiceAuditDO audit = invoiceAuditMapper.selectById(reqVO.getId());
         if (audit == null) throw exception(INVOICE_AUDIT_NOT_EXISTS);
-        if (!"pending".equals(audit.getStatus())) throw exception(INVOICE_AUDIT_STATUS_CANNOT_REJECT);
+        if (!InvoiceAuditStatusEnum.PENDING.getValue().equals(audit.getStatus())) throw exception(INVOICE_AUDIT_STATUS_CANNOT_REJECT);
         InvoiceAuditDO update = new InvoiceAuditDO();
         update.setId(reqVO.getId());
-        update.setStatus("rejected");
+        update.setStatus(InvoiceAuditStatusEnum.REJECTED.getValue());
         update.setAuditorId(SecurityFrameworkUtils.getLoginUserId());
         update.setAuditTime(LocalDateTime.now());
         update.setAuditResult(reqVO.getRejectReason());
@@ -111,7 +113,7 @@ public class InvoiceAuditServiceImpl implements InvoiceAuditService {
         if (audit == null) throw exception(INVOICE_AUDIT_NOT_EXISTS);
         InvoiceAuditDO update = new InvoiceAuditDO();
         update.setId(reqVO.getId());
-        update.setStatus("pending");
+        update.setStatus(InvoiceAuditStatusEnum.PENDING.getValue());
         update.setApplyTime(LocalDateTime.now());
         invoiceAuditMapper.updateById(update);
     }
@@ -121,11 +123,12 @@ public class InvoiceAuditServiceImpl implements InvoiceAuditService {
     public void batchAuditInvoiceAudit(List<Long> ids) {
         ids.forEach(id -> {
             InvoiceAuditDO audit = invoiceAuditMapper.selectById(id);
-            if (audit != null && "pending".equals(audit.getStatus())) {
+            if (audit != null && InvoiceAuditStatusEnum.PENDING.getValue().equals(audit.getStatus())) {
                 InvoiceAuditDO update = new InvoiceAuditDO();
                 update.setId(id);
-                update.setStatus("approved");
+                update.setStatus(InvoiceAuditStatusEnum.APPROVED.getValue());
                 update.setAuditorId(SecurityFrameworkUtils.getLoginUserId());
+                update.setUpdater(SecurityFrameworkUtils.getLoginUserNickname());
                 update.setAuditTime(LocalDateTime.now());
                 invoiceAuditMapper.updateById(update);
             }
@@ -135,7 +138,9 @@ public class InvoiceAuditServiceImpl implements InvoiceAuditService {
     @Override
     public InvoiceAuditChartRespVO getInvoiceAuditChart(InvoiceAuditChartReqVO chartReqVO) {
         InvoiceAuditChartRespVO resp = new InvoiceAuditChartRespVO();
-        LocalDateTime start = chartReqVO.getStartTime() != null ? chartReqVO.getStartTime() : LocalDateTime.now().minusDays(30);
+        // 默认查全量，注释掉30天限制
+        // LocalDateTime start = chartReqVO.getStartTime() != null ? chartReqVO.getStartTime() : LocalDateTime.now().minusDays(30);
+        LocalDateTime start = chartReqVO.getStartTime();
         LocalDateTime end = chartReqVO.getEndTime() != null ? chartReqVO.getEndTime() : LocalDateTime.now();
         LocalDateTime todayStart = LocalDateTime.now().withHour(0).withMinute(0).withSecond(0).withNano(0);
         LocalDateTime now = LocalDateTime.now();

@@ -75,9 +75,9 @@ public class InvoiceListRespVO {
     @ExcelProperty("备注")
     private String remark;
 
-    @Schema(description = "备用字段1")
+    @Schema(description = "接收邮箱")
     @ExcelProperty("邮箱")
-    private String reserve1;
+    private String email;
 
    /* @Schema(description = "备用字段2")
     private String reserve2;*/

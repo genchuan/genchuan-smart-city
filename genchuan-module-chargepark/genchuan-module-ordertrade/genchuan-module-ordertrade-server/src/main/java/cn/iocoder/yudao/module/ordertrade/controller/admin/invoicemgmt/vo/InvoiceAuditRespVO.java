@@ -29,10 +29,6 @@ public class InvoiceAuditRespVO {
     @ExcelProperty("申请人ID")
     private Long applicantId;
 
-    @Schema(description = "申请人名称")
-    @ExcelProperty("申请人名称")
-    private String applicantName;
-
     @Schema(description = "申请时间")
     @ExcelProperty("申请时间")
     private LocalDateTime applyTime;
@@ -46,10 +42,6 @@ public class InvoiceAuditRespVO {
     @ExcelProperty("审核人ID")
     private Long auditorId;
 
-    @Schema(description = "审核人名称")
-    @ExcelProperty("审核人名称")
-    private String auditorName;
-
     @Schema(description = "审核时间")
     @ExcelProperty("审核时间")
     private LocalDateTime auditTime;
@@ -62,20 +54,19 @@ public class InvoiceAuditRespVO {
     @ExcelProperty("备注")
     private String remark;
 
-    @Schema(description = "备用字段1")
-    private String reserve1;
-
-    @Schema(description = "备用字段2")
-    private String reserve2;
-
-    @Schema(description = "创建者")
-    @ExcelProperty("创建者")
+    @Schema(description = "申请人名称")
+    @ExcelProperty("申请人名称")
     private String creator;
 
     @Schema(description = "创建时间")
     @ExcelProperty("创建时间")
     private LocalDateTime createTime;
 
+    @Schema(description = "审核人名称")
+    @ExcelProperty("审核人名称")
+    private String updater;
+
     @Schema(description = "更新时间")
+    @ExcelProperty("更新时间")
     private LocalDateTime updateTime;
 }

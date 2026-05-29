@@ -97,13 +97,14 @@ public class ReconcileBillServiceImpl implements ReconcileBillService {
     public void confirmReconcileBill(Long id) {
         ReconcileBillDO bill = reconcileBillMapper.selectById(id);
         if (bill == null) throw exception(RECONCILE_BILL_NOT_EXISTS);
-        if (!"pending".equals(bill.getStatus()) && !"reconciling".equals(bill.getStatus()))
+        if (!ReconcileBillStatusEnum.RECONCILED.getValue().equals(bill.getStatus()))
             throw exception(RECONCILE_BILL_STATUS_CANNOT_CONFIRM);
         ReconcileBillDO update = new ReconcileBillDO();
         update.setId(id);
-        update.setStatus("confirmed");
+        // 状态保持为 reconciled，不改变
         update.setConfirmTime(LocalDateTime.now());
         update.setReconcilerId(SecurityFrameworkUtils.getLoginUserId());
+        //update.setUpdater(getLoginUserNickname());
         reconcileBillMapper.updateById(update);
     }
 
@@ -114,7 +115,7 @@ public class ReconcileBillServiceImpl implements ReconcileBillService {
         if (bill == null) throw exception(RECONCILE_BILL_NOT_EXISTS);
         ReconcileBillDO update = new ReconcileBillDO();
         update.setId(reqVO.getId());
-        //update.setStatus("fixed");
+        update.setStatus(ReconcileBillStatusEnum.RECONCILED.getValue());
         update.setReserve1(reqVO.getFixReason());
         update.setReconcilerId(SecurityFrameworkUtils.getLoginUserId());
         reconcileBillMapper.updateById(update);
@@ -123,7 +124,9 @@ public class ReconcileBillServiceImpl implements ReconcileBillService {
     @Override
     public ReconcileBillChartRespVO getReconcileBillChart(ReconcileBillChartReqVO chartReqVO) {
         ReconcileBillChartRespVO resp = new ReconcileBillChartRespVO();
-        LocalDateTime start = chartReqVO.getStartTime() != null ? chartReqVO.getStartTime() : LocalDateTime.now().minusDays(30);
+        // 默认查全量，注释掉30天限制
+        // LocalDateTime start = chartReqVO.getStartTime() != null ? chartReqVO.getStartTime() : LocalDateTime.now().minusDays(30);
+        LocalDateTime start = chartReqVO.getStartTime();
         LocalDateTime end = chartReqVO.getEndTime() != null ? chartReqVO.getEndTime() : LocalDateTime.now();
 
         resp.setTrendData(reconcileBillMapper.selectTrend(start, end));

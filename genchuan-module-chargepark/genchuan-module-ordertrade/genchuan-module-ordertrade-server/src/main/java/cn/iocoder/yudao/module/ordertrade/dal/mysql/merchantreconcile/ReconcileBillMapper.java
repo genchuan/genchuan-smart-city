@@ -28,7 +28,7 @@ public interface ReconcileBillMapper extends BaseMapperX<ReconcileBillDO> {
     }
 
     @Select("<script>" +
-            "SELECT rb.*, mi.name AS merchant_name " +
+            "SELECT rb.*, mi.name AS merchantName " +
             "FROM reconcile_bill rb " +
             "LEFT JOIN merchant_info mi ON mi.id = rb.merchant_id AND mi.deleted = 0 " +
             "WHERE rb.deleted = 0 " +
@@ -40,7 +40,7 @@ public interface ReconcileBillMapper extends BaseMapperX<ReconcileBillDO> {
             "</script>")
     IPage<ReconcileBillDO> selectPageWithMerchant(Page<ReconcileBillDO> page, @Param("req") ReconcileBillPageReqVO reqVO);
 
-    @Select("SELECT rb.*, mi.name AS merchant_name " +
+    @Select("SELECT rb.*, mi.name AS merchantName " +
             "FROM reconcile_bill rb " +
             "LEFT JOIN merchant_info mi ON mi.id = rb.merchant_id AND mi.deleted = 0 " +
             "WHERE rb.id = #{id} AND rb.deleted = 0")
