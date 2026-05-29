@@ -137,7 +137,7 @@ public class AccessApplyServiceImpl implements AccessApplyService {
 
         // 通过classId 查询 System模块的 dept.id 的名称，减少关联查询
         String className=null;
-        if (null == classId) {
+        if (null != classId) {
             CommonResult<DeptRespDTO> dept = deptApi.getDept(classId);
             DeptRespDTO data = dept.getData();
             if (data == null) {
