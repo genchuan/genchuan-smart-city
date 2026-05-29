@@ -46,7 +46,9 @@ public class ArrearRecordServiceImpl implements ArrearRecordService {
     }
     @Override public ArrearRecordChartRespVO getArrearRecordChart(ArrearRecordChartReqVO v)  {
         ArrearRecordChartRespVO resp = new ArrearRecordChartRespVO();
-        LocalDateTime start = v.getStartTime() != null ? v.getStartTime() : LocalDateTime.now().minusDays(30);
+        // 默认查全量，注释掉30天限制
+        // LocalDateTime start = v.getStartTime() != null ? v.getStartTime() : LocalDateTime.now().minusDays(30);
+        LocalDateTime start = v.getStartTime();
         LocalDateTime end   = v.getEndTime()   != null ? v.getEndTime()   : LocalDateTime.now();
         resp.setTrendData(arrearRecordMapper.selectTrend(start, end));
         ArrearRecordChartRespVO.CardData card = new ArrearRecordChartRespVO.CardData();

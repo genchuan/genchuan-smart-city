@@ -82,7 +82,9 @@ public class AgentRecordServiceImpl implements AgentRecordService {
     @Override
     public AgentRecordChartRespVO getAgentRecordChart(AgentRecordChartReqVO chartReqVO) {
         AgentRecordChartRespVO resp = new AgentRecordChartRespVO();
-        LocalDateTime start = chartReqVO.getStartTime() != null ? chartReqVO.getStartTime() : LocalDateTime.now().minusDays(30);
+        // 默认查全量，注释掉30天限制
+        // LocalDateTime start = chartReqVO.getStartTime() != null ? chartReqVO.getStartTime() : LocalDateTime.now().minusDays(30);
+        LocalDateTime start = chartReqVO.getStartTime();
         LocalDateTime end = chartReqVO.getEndTime() != null ? chartReqVO.getEndTime() : LocalDateTime.now();
 
         resp.setTrendData(agentRecordMapper.selectTrend(start, end));

@@ -60,7 +60,9 @@ public class ReconcileRecordServiceImpl implements ReconcileRecordService {
     @Override
     public ReconcileRecordChartRespVO getReconcileRecordChart(ReconcileRecordChartReqVO chartReqVO) {
         ReconcileRecordChartRespVO resp = new ReconcileRecordChartRespVO();
-        LocalDateTime start = chartReqVO.getStartTime() != null ? chartReqVO.getStartTime() : LocalDateTime.now().minusDays(30);
+        // 默认查全量，注释掉30天限制
+        // LocalDateTime start = chartReqVO.getStartTime() != null ? chartReqVO.getStartTime() : LocalDateTime.now().minusDays(30);
+        LocalDateTime start = chartReqVO.getStartTime();
         LocalDateTime end = chartReqVO.getEndTime() != null ? chartReqVO.getEndTime() : LocalDateTime.now();
 
         resp.setTrendData(reconcileRecordMapper.selectTrend(start, end));

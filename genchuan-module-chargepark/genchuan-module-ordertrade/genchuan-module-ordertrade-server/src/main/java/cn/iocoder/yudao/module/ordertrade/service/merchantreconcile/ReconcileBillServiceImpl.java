@@ -123,7 +123,9 @@ public class ReconcileBillServiceImpl implements ReconcileBillService {
     @Override
     public ReconcileBillChartRespVO getReconcileBillChart(ReconcileBillChartReqVO chartReqVO) {
         ReconcileBillChartRespVO resp = new ReconcileBillChartRespVO();
-        LocalDateTime start = chartReqVO.getStartTime() != null ? chartReqVO.getStartTime() : LocalDateTime.now().minusDays(30);
+        // 默认查全量，注释掉30天限制
+        // LocalDateTime start = chartReqVO.getStartTime() != null ? chartReqVO.getStartTime() : LocalDateTime.now().minusDays(30);
+        LocalDateTime start = chartReqVO.getStartTime();
         LocalDateTime end = chartReqVO.getEndTime() != null ? chartReqVO.getEndTime() : LocalDateTime.now();
 
         resp.setTrendData(reconcileBillMapper.selectTrend(start, end));

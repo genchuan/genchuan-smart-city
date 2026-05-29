@@ -41,7 +41,9 @@ public class CollectTrackServiceImpl implements CollectTrackService {
     @Override public PageResult<CollectTrackDO> getCollectTrackPage(CollectTrackPageReqVO v) { return collectTrackMapper.selectPage(v); }
     @Override public CollectTrackChartRespVO getCollectTrackChart(CollectTrackChartReqVO v)  {
         CollectTrackChartRespVO resp = new CollectTrackChartRespVO();
-        LocalDateTime start = v.getStartTime() != null ? v.getStartTime() : LocalDateTime.now().minusDays(30);
+        // 默认查全量，注释掉30天限制
+        // LocalDateTime start = v.getStartTime() != null ? v.getStartTime() : LocalDateTime.now().minusDays(30);
+        LocalDateTime start = v.getStartTime();
         LocalDateTime end   = v.getEndTime()   != null ? v.getEndTime()   : LocalDateTime.now();
         resp.setTrendData(collectTrackMapper.selectTrend(start, end));
         resp.setMethodData(collectTrackMapper.selectGroupByCollectMethod(start, end));

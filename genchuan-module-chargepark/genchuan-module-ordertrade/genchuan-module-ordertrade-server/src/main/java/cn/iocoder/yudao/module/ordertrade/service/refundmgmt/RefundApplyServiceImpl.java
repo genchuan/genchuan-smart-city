@@ -49,7 +49,9 @@ public class RefundApplyServiceImpl implements RefundApplyService {
         @Override
     public RefundApplyChartRespVO getRefundApplyChart(RefundApplyChartReqVO v) {
         RefundApplyChartRespVO resp = new RefundApplyChartRespVO();
-        LocalDateTime start = v.getApplyTimeStart() != null ? v.getApplyTimeStart() : LocalDateTime.now().minusDays(30);
+        // 默认查全量，注释掉30天限制
+        // LocalDateTime start = v.getApplyTimeStart() != null ? v.getApplyTimeStart() : LocalDateTime.now().minusDays(30);
+        LocalDateTime start = v.getApplyTimeStart();
         LocalDateTime end   = v.getApplyTimeEnd()   != null ? v.getApplyTimeEnd()   : LocalDateTime.now();
         resp.setTrendData(refundApplyMapper.selectTrend(start, end));
         resp.setTypeData(refundApplyMapper.selectGroupByStatus(start, end));

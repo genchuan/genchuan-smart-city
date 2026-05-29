@@ -62,7 +62,9 @@ public class BikeChargeOrderServiceImpl implements BikeChargeOrderService {
         @Override
     public BikeChargeOrderChartRespVO getBikeChargeOrderChart(BikeChargeOrderChartReqVO v) {
         BikeChargeOrderChartRespVO resp = new BikeChargeOrderChartRespVO();
-        LocalDateTime start = v.getStartTime() != null ? v.getStartTime() : LocalDateTime.now().minusDays(30);
+        // 默认查全量，注释掉30天限制
+        // LocalDateTime start = v.getStartTime() != null ? v.getStartTime() : LocalDateTime.now().minusDays(30);
+        LocalDateTime start = v.getStartTime();
         LocalDateTime end   = v.getEndTime()   != null ? v.getEndTime()   : LocalDateTime.now();
         LocalDateTime todayStart = LocalDateTime.now().withHour(0).withMinute(0).withSecond(0).withNano(0);
         LocalDateTime now = LocalDateTime.now();

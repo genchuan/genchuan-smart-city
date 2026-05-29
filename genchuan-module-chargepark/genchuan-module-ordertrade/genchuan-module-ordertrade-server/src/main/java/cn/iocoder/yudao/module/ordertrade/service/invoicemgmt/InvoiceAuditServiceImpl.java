@@ -138,7 +138,9 @@ public class InvoiceAuditServiceImpl implements InvoiceAuditService {
     @Override
     public InvoiceAuditChartRespVO getInvoiceAuditChart(InvoiceAuditChartReqVO chartReqVO) {
         InvoiceAuditChartRespVO resp = new InvoiceAuditChartRespVO();
-        LocalDateTime start = chartReqVO.getStartTime() != null ? chartReqVO.getStartTime() : LocalDateTime.now().minusDays(30);
+        // 默认查全量，注释掉30天限制
+        // LocalDateTime start = chartReqVO.getStartTime() != null ? chartReqVO.getStartTime() : LocalDateTime.now().minusDays(30);
+        LocalDateTime start = chartReqVO.getStartTime();
         LocalDateTime end = chartReqVO.getEndTime() != null ? chartReqVO.getEndTime() : LocalDateTime.now();
         LocalDateTime todayStart = LocalDateTime.now().withHour(0).withMinute(0).withSecond(0).withNano(0);
         LocalDateTime now = LocalDateTime.now();

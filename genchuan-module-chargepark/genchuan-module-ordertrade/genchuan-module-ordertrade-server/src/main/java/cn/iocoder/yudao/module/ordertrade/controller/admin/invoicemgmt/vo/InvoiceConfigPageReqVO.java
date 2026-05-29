@@ -23,6 +23,9 @@ public class InvoiceConfigPageReqVO extends PageParam {
     @Schema(description = "状态：pending/enabled/disabled")
     private String status;
 
+    @Schema(description = "纳税主体，模糊查询")
+    private String taxBody;
+
     @Schema(description = "申请人，模糊查询")
     private String creator;
 

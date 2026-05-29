@@ -17,6 +17,7 @@ public interface InvoiceConfigMapper extends BaseMapperX<InvoiceConfigDO> {
     default PageResult<InvoiceConfigDO> selectPage(InvoiceConfigPageReqVO reqVO) {
         return selectPage(reqVO, new LambdaQueryWrapperX<InvoiceConfigDO>()
                 .likeIfPresent(InvoiceConfigDO::getCategory, reqVO.getCategory())
+                .likeIfPresent(InvoiceConfigDO::getTaxBody, reqVO.getTaxBody())
                 .eqIfPresent(InvoiceConfigDO::getStatus, reqVO.getStatus())
                 .likeIfPresent(InvoiceConfigDO::getCreator, reqVO.getCreator())
                 .betweenIfPresent(InvoiceConfigDO::getCreateTime, reqVO.getCreateTimeStart(), reqVO.getCreateTimeEnd())
