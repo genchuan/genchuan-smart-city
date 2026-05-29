@@ -10,7 +10,7 @@ import lombok.Getter;
  */
 public enum StudentInfoStatusEnum {
 
-    // 状态（待确认 / 待审核 / 已通过，关联芋道字典表：stay_mgmt_status）
+    // 状态（待确认 / 待审核 / 已通过，关联芋道字典表：student_info_status）
     STUDENT_INFO_STATUS_1("1", "在籍"),
     STUDENT_INFO_STATUS_2("2", "休学"),
     STUDENT_INFO_STATUS_3("3", "退学"),

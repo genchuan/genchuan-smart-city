@@ -102,7 +102,7 @@ public class TreatMgmtServiceImpl implements TreatMgmtService {
         String username = SecurityFrameworkUtils.getLoginUserNickname();
         treatMgmt.setCreator(username);
         treatMgmt.setRegisterTime(LocalDateTime.now());
-        treatMgmt.setApplyTime(LocalDateTime.now());
+        treatMgmt.setApplyTime(reqVO.getApplyTime());
         // 插入
         int i = treatMgmtMapper.insert(treatMgmt);
         if (i > 0) {

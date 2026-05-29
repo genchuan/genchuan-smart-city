@@ -123,10 +123,10 @@ public class RepairMgmtController {
             }
             item.setStatus(status);
             String checkStatus = item.getCheckStatus();
-            if (statusDictDataList.getData() != null) {
-                for (DictDataRespDTO dictData : statusDictDataList.getData()) {
-                    if (dictData.getValue().equals(status)) {
-                        status = dictData.getLabel();
+            if (checkStatusDictDataList.getData() != null) {
+                for (DictDataRespDTO dictData : checkStatusDictDataList.getData()) {
+                    if (dictData.getValue().equals(checkStatus)) {
+                        checkStatus = dictData.getLabel();
                         break;
                     }
                 }

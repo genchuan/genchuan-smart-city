@@ -10,7 +10,6 @@ import lombok.Getter;
  */
 public enum TreatStatusEnum {
 
-    // 状态（待确认 / 待审核 / 已通过，关联芋道字典表：stay_mgmt_status）
     PENDING("pending", "待审核"),
     VISITED("visited", "已就诊");
 
