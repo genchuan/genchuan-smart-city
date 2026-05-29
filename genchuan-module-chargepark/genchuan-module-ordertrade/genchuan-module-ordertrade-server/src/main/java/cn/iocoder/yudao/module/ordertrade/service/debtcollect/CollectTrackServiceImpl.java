@@ -98,7 +98,7 @@ public class CollectTrackServiceImpl implements CollectTrackService {
         update.setId(reqVO.getId());
         update.setTransferUserId(reqVO.getTransferUserId());
         update.setOperatorId(SecurityFrameworkUtils.getLoginUserId());
-        if (reqVO.getRemark() != null) update.setCollectProgress("转派：" + reqVO.getRemark());
+        if (reqVO.getRemark() != null) update.setCollectProgress( reqVO.getRemark());
         collectTrackMapper.updateById(update);
     }
 
