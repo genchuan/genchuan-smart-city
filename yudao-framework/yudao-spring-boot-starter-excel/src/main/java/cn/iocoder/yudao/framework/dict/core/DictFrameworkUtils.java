@@ -23,7 +23,7 @@ import static cn.iocoder.yudao.framework.common.util.collection.CollectionUtils.
 @Slf4j
 public class DictFrameworkUtils {
 
-    private static DictDataCommonApi dictDataApi;
+    public static DictDataCommonApi dictDataApi;
 
     /**
      * 针对 dictType 的字段数据缓存
