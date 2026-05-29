@@ -12,8 +12,8 @@ public enum ViolaateStatusEnum {
 
 //    待审批 / 已执行 / 已预警，关联芋道字典表：violate_mgmt_status
     VIOLATE_MGMT_VIOLATE_STATUS_PENDING ("pending", "待审批"),
-    VIOLATE_MGMT_VIOLATE_STATUS_APPROVE("approve", "已执行"),
-    VIOLATE_MGMT_VIOLATE_STATUS_WARN("warn", "已预警");
+    VIOLATE_MGMT_VIOLATE_STATUS_APPROVED("executed", "已执行"),
+    VIOLATE_MGMT_VIOLATE_STATUS_WARNED("warned", "已预警");
 
     public static final String DICT_TYPE = "violate_mgmt_status";
     /**

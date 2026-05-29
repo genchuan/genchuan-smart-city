@@ -10,7 +10,7 @@ import lombok.Getter;
  */
 public enum AidWorkProcessStatusEnum {
 
-    // 状态（待审核 / 已通过 / 已完成），关联芋道字典表：violate_mgmt_status
+    // 状态（待审核 / 已通过 / 已完成），关联芋道字典表：aid_work_process_status
     AID_WORK_PROCESS_STATUS_ENUM_0("0", "跟进中"),
     AID_WORK_PROCESS_STATUS_ENUM_1("1", "已完成");
 

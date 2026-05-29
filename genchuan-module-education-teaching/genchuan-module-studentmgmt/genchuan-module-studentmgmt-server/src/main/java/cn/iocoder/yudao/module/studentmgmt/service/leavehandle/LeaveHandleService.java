@@ -67,4 +67,6 @@ public interface LeaveHandleService {
     LeaveHandleCharRespVO chart(@Valid BaseChartReqVO reqVO);
 
     LeaveHandleIndexRespVO leaveIndex(@Valid BaseChartReqVO reqVO);
+
+    PageResult<LeaveHandleRespVO> getLeaveHandleJoinPage(@Valid LeaveHandlePageReqVO pageReqVO);
 }

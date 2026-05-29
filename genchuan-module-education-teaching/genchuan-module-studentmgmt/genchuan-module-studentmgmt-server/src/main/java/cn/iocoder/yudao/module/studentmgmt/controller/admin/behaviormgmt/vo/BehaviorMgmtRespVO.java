@@ -49,7 +49,7 @@ public class BehaviorMgmtRespVO {
     private LocalDateTime auditTime;
 
     @Schema(description = "考勤同步状态：未同步/已同步")
-    @ExcelProperty("考勤同步状态：未同步/已同步")
+    @ExcelProperty("考勤同步状态")
     private String attendanceSync;
 
     @Schema(description = "状态：待审批/已通过/已驳回", requiredMode = Schema.RequiredMode.REQUIRED, example = "1")

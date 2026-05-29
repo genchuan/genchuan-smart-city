@@ -86,8 +86,8 @@ public class LeaveHandleController {
     @Operation(summary = "获得离校办理分页")
     @PreAuthorize("@ss.hasPermission('studentmgmt:leave-handle:query')")
     public CommonResult<PageResult<LeaveHandleRespVO>> getLeaveHandlePage(@Valid LeaveHandlePageReqVO pageReqVO) {
-        PageResult<LeaveHandleDO> pageResult = leaveHandleService.getLeaveHandlePage(pageReqVO);
-        return success(BeanUtils.toBean(pageResult, LeaveHandleRespVO.class));
+//        PageResult<LeaveHandleDO> pageResult = leaveHandleService.getLeaveHandlePage(pageReqVO);
+        return success( leaveHandleService.getLeaveHandleJoinPage(pageReqVO));
     }
 
     @GetMapping("/export-excel")

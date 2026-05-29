@@ -10,7 +10,6 @@ import lombok.Getter;
  */
 public enum TreatTypeEnum {
 
-    // 状态（待确认 / 待审核 / 已通过，关联芋道字典表：stay_mgmt_status）
     OUTPATIENT("outpatient", "门诊"),
     EMERGENCY("emergency", "急诊"),
     OTHER("other", "其他");

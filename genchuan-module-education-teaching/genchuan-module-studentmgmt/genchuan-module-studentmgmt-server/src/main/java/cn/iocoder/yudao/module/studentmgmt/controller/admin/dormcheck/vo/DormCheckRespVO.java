@@ -26,11 +26,11 @@ public class DormCheckRespVO {
     private LocalDateTime checkTime;
 
     @Schema(description = "考勤状态：正常/迟到/未到", requiredMode = Schema.RequiredMode.REQUIRED, example = "1")
-    @ExcelProperty("考勤状态：正常/迟到/未到")
+    @ExcelProperty("考勤状态")
     private String checkStatus;
 
     @Schema(description = "异常类型：无/晚归/未归", example = "1")
-    @ExcelProperty("异常类型：无/晚归/未归")
+    @ExcelProperty("异常类型")
     private String abnormalType;
 
     @Schema(description = "补卡时间")

@@ -99,16 +99,16 @@ public class CompareMgmtController {
         CommonResult<List<DictDataRespDTO>> cycleDictDataList = dictDataApi.getDictDataList(StudentMgmtDictTypeEnum.COMPARE_MGMT_CYCLE.getType());
         CommonResult<List<DictDataRespDTO>> statusDictDataList = dictDataApi.getDictDataList(StudentMgmtDictTypeEnum.COMPARE_MGMT_STATUS.getType());
         list = list.stream().map(item -> {
-            String applyType = item.getCycle();
+            String cycle = item.getCycle();
             if (cycleDictDataList.getData() != null) {
                 for (DictDataRespDTO dictData : cycleDictDataList.getData()) {
-                    if (dictData.getValue().equals(applyType)) {
-                        applyType = dictData.getLabel();
+                    if (dictData.getValue().equals(cycle)) {
+                        cycle = dictData.getLabel();
                         break;
                     }
                 }
             }
-            item.setCycle(applyType);
+            item.setCycle(cycle);
             String status = item.getStatus();
             if (statusDictDataList.getData() != null) {
                 for (DictDataRespDTO dictData : statusDictDataList.getData()) {

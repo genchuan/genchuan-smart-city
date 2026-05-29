@@ -83,6 +83,10 @@ public class StudyUpServiceImpl implements StudyUpService {
     public PageResult<StudyUpDO> getStudyUpPage(StudyUpPageReqVO pageReqVO) {
         return studyUpMapper.selectPage(pageReqVO);
     }
+    @Override
+    public PageResult<StudyUpRespVO> getStudyUpJoinPage(StudyUpPageReqVO pageReqVO) {
+        return studyUpMapper.selectJoinPage(pageReqVO);
+    }
 
     @Override
     public StudyUpQueryRespVO query(StudyUpQueryReqVO reqVO) {

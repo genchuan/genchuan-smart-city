@@ -71,4 +71,7 @@ public interface StudyUpService {
     StudyUpChartRespVO chart(@Valid BaseChartReqVO reqVO);
 
     StudyUpStudyCountRespVO studyCount(@Valid BaseChartReqVO reqVO);
+
+    PageResult<StudyUpRespVO> getStudyUpJoinPage(@Valid StudyUpPageReqVO pageReqVO);
+
 }

@@ -20,7 +20,7 @@
     <select id="selectTotalCount"
             resultType="cn.iocoder.yudao.module.studentmgmt.controller.admin.studyup.vo.StudyUpChartRespVO">
         SELECT
-        COUNT(id) AS totalCount,
+        COUNT(id) AS totalStudent,
         COUNT(IF(status = #{pending_plan}, 1, NULL)) AS waitPlanStudent,
         COUNT(IF(status = #{planned}, 1, NULL)) AS plannedStudent
         FROM study_up

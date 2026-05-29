@@ -86,8 +86,8 @@ public class StudyUpController {
     @Operation(summary = "获得升学管理分页")
     @PreAuthorize("@ss.hasPermission('studentmgmt:study-up:query')")
     public CommonResult<PageResult<StudyUpRespVO>> getStudyUpPage(@Valid StudyUpPageReqVO pageReqVO) {
-        PageResult<StudyUpDO> pageResult = studyUpService.getStudyUpPage(pageReqVO);
-        return success(BeanUtils.toBean(pageResult, StudyUpRespVO.class));
+//        PageResult<StudyUpDO> pageResult = studyUpService.getStudyUpPage(pageReqVO);
+        return success(studyUpService.getStudyUpJoinPage(pageReqVO));
     }
 
     @GetMapping("/export-excel")

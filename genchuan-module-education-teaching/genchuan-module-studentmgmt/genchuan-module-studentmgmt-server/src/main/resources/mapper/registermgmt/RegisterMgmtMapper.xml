@@ -30,6 +30,10 @@
         COUNT(*) AS apply_count,
         SUM(IF(status = #{status}, 1, 0)) AS admit_count
         FROM register_mgmt
+        WHERE deleted = 0
+        <if test="startTime != null and endTime != null">
+            AND apply_time BETWEEN #{startTime} AND #{endTime}
+        </if>
         GROUP BY major
     </select>
     <select id="selectTotalCount"
