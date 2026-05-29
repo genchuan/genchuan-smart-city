@@ -19,19 +19,19 @@ import static cn.iocoder.yudao.framework.common.util.date.DateUtils.FORMAT_YEAR_
 @Data
 public class DrillDownReqVO {
 
-    @Schema(description = "卡片指标：totalAreaCount/totalStationCount/normalOperateCount/totalSpaceCount/availableSpaceCount/effectiveRuleCount/orderCount/revenue/recoveryRate/depositOrderCount",
-            requiredMode = Schema.RequiredMode.REQUIRED, example = "totalAreaCount")
+    @Schema(description = "卡片指标：总片区数/覆盖场站数/总场站数/正常运营数/总车位数/可用车位数/生效规则数/订单量/营收/追缴完成率/押金订单量",
+            requiredMode = Schema.RequiredMode.REQUIRED, example = "总片区数")
     @NotBlank(message = "卡片指标不能为空")
     private String metric;
 
     @Schema(description = "报表周期：日报/周报/月报/季报/半年报/年报/自定义报表", example = "日报")
     private String reportCycle;
 
-    @Schema(description = "报表开始时间")
+    @Schema(description = "报表开始时间",hidden = true)
     @DateTimeFormat(pattern = FORMAT_YEAR_MONTH_DAY_HOUR_MINUTE_SECOND)
     private LocalDateTime reportStartTime;
 
-    @Schema(description = "报表结束时间")
+    @Schema(description = "报表结束时间",hidden = true)
     @DateTimeFormat(pattern = FORMAT_YEAR_MONTH_DAY_HOUR_MINUTE_SECOND)
     private LocalDateTime reportEndTime;
 

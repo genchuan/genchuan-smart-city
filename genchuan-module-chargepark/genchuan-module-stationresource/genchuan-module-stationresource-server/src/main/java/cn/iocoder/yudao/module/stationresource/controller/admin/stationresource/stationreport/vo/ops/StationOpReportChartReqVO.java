@@ -13,7 +13,7 @@ import java.time.LocalDateTime;
 public class StationOpReportChartReqVO {
 
     @Schema(description = "报表周期：日报/周报/月报/季报/半年报/年报", requiredMode = Schema.RequiredMode.REQUIRED, example = "月报")
-    @NotBlank(message = "报表周期不能为空")
+//    @NotBlank(message = "报表周期不能为空")
     private String reportCycle;
 
     @Schema(description = "报表开始时间", requiredMode = Schema.RequiredMode.REQUIRED, example = "2026-03-01 00:00:00")

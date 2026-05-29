@@ -3,6 +3,7 @@ package cn.iocoder.yudao.module.stationresource.vrv.utils.common.excel;
 import cn.hutool.core.bean.BeanUtil;
 import cn.idev.excel.EasyExcel;
 import cn.idev.excel.annotation.ExcelIgnore;
+import cn.idev.excel.write.builder.ExcelWriterBuilder;
 import cn.idev.excel.write.style.column.LongestMatchColumnWidthStyleStrategy;
 import cn.iocoder.yudao.framework.common.exception.ErrorCode;
 import cn.iocoder.yudao.framework.excel.core.util.ExcelUtils;
@@ -11,7 +12,6 @@ import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.http.MediaType;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
@@ -32,36 +32,60 @@ import static cn.iocoder.yudao.framework.common.exception.util.ServiceExceptionU
 /**
  * Excel导入导出工具类（通用）
  * <p>统一处理 Excel 导入模板下载、列表导出、数据导入解析等功能。
- * <p>V2.1 新增：导入错误提示中文化（字段名+类型+示例），Boolean 支持"是/否"输入
- * <p>V2.2 新增：导入模板文件名改为中文业务名+日期、表头自动去除中括号 [xxx]
- * <p>V2.3 新增：导入模板表头非必选字段自动标注“（可选）”
+ * <p>V2.1 2026-05-09 10:07 新增：导入错误提示中文化（字段名+类型+示例），Boolean 支持"是/否"输入
+ * <p>V2.2 2026-05-09 15:00 新增：导入模板文件名改为中文业务名+日期、表头自动去除中括号 [xxx]
+ * <p>V2.3 2026-05-25 14:00 新增：导入模板表头非必选字段自动标注"（可选）"
+ * <p>V2.4 2026-05-26 15:00 新增：支持 @ExcelDropdown 注解，为有限定值的字段自动生成下拉选择框
+ * <p>V2.5 2026-05-26 17:00 新增：支持 fieldDropdownMap 参数传入动态下拉数据
+ * <p>V2.6 2026-05-26 18:00 新增：支持 DropdownOption（展示值+真值），下拉显示 label、导入存 value
  *
  * @author vrvliang
- * @version V2.3 2026-05-25
+ * @version V2.6 2026-05-26 18:00
  */
 public class VrvExcelUtils {
 
     /**
-     * 下载 Excel 导入模板（通用，适配 importExcelAndReturnEntity 解析）
-     * <p>自动从实体类读取字段信息生成模板，跳过 @ExcelIgnore 字段，
-     * 表头和示例值优先取 @Schema 注解的中文描述和示例值。
+     * 下载导入模板（无动态下拉，向后兼容）
+     */
+    public static <T> void downloadImportTemplate(HttpServletResponse response, Class<T> clazz) throws Exception {
+        downloadImportTemplateWithOptions(response, clazz, null);
+    }
+
+    /**
+     * 下载 Excel 导入模板（支持 展示值≠真值 的下拉）
+     * <p>下拉显示 label（如"张三"），导入时自动转为 value（如 10001）。
+     *
+     * <pre>
+     * 使用示例：
+     *   // 下拉显示+导入存同一个值（如枚举"未生效"/"已生效"）
+     *   new DropdownOption("未生效", "未生效")
+     *
+     *   // 下拉显示昵称，导入存 userId
+     *   new DropdownOption("张三", 10001L)
+     * </pre>
      *
      * <pre>
      * 版本历史：
-     *   V1 2026-04-08  —— 初始版本：英文字段名作表头，"请输入XXX" 作示例行
-     *   V2 2026-05-09 10:07 —— 表头改为读取 @Schema.description（中文名）
-     *                           示例行改为读取 @Schema.example（真实示例值）
-     *                           支持跳过 @ExcelIgnore 标记的字段
-     *                           无注解字段回退到字段名 + 类型默认值
-     *   V3 2026-05-21 —— 文件名改为中文业务名+日期（取自类@Schema，如"场站信息_导入模板_20260521.xlsx"）
-     *                   表头中文字段自动去除中括号，如 [主键ID] → 主键ID
+     *   V6 2026-05-26 18:00 —— 支持 DropdownOption，展示值和真值分离
      * </pre>
      */
-    public static <T> void downloadImportTemplate(HttpServletResponse response, Class<T> clazz) throws Exception {
+    public static <T> void downloadImportTemplate(HttpServletResponse response, Class<T> clazz,
+                                                   Map<String, List<DropdownOption>> fieldDropdownMap) throws Exception {
+        downloadImportTemplateWithOptions(response, clazz, fieldDropdownMap);
+    }
+
+    /**
+     * 下载模板核心实现（内部统一使用 DropdownOption）
+     */
+    private static <T> void downloadImportTemplateWithOptions(HttpServletResponse response, Class<T> clazz,
+                                                               Map<String, List<DropdownOption>> fieldDropdownMap) throws Exception {
         // 1. 收集字段信息：跳过@ExcelIgnore字段，从@Schema提取中文名和示例值
-        List<Field> validFields = new ArrayList<>();
+//        List<Field> validFields = new ArrayList<>();
         List<String> headerList = new ArrayList<>();
         List<String> exampleList = new ArrayList<>();
+        // 下拉框配置：列索引 → 选项数组
+        Map<Integer, String[]> dropdownMap = new LinkedHashMap<>();
+        int colIndex = 0; // 列索引（跳过 @ExcelIgnore 后重新计数）
 
         for (Field field : clazz.getDeclaredFields()) {
             // 跳过 @ExcelIgnore 标记的字段
@@ -69,7 +93,7 @@ public class VrvExcelUtils {
                 continue;
             }
 
-            validFields.add(field);
+//            validFields.add(field);
 
             // 表头中文名：优先取 @Schema.description，无则取字段名
             String headerName = field.getName();
@@ -78,26 +102,43 @@ public class VrvExcelUtils {
                 Schema schema = field.getAnnotation(Schema.class);
                 if (schema.description() != null && !schema.description().isEmpty()) {
                     headerName = schema.description();
-                    // 去掉中括号，如 [主键ID] → 主键ID
                     headerName = headerName.replaceAll("\\[([^\\]]+)\\]", "$1");
                 }
                 if (schema.example() != null && !schema.example().isEmpty()) {
                     example = schema.example();
                 }
             }
-            // 非必选字段表头标注“可选”
-//            Schema schema = field.getAnnotation(Schema.class);
-//            if (!field.isAnnotationPresent(NotNull.class)
-//                    && !field.isAnnotationPresent(NotBlank.class)
-//                    && !field.isAnnotationPresent(NotEmpty.class)
-//                    && (schema == null || schema.requiredMode() != Schema.RequiredMode.REQUIRED)) {
-//                headerName = "（可选）" + headerName;
-//            }
+            // 非必选字段表头标注"可选"
+            Schema schema = field.getAnnotation(Schema.class);
+            if (!field.isAnnotationPresent(NotNull.class)
+                    && !field.isAnnotationPresent(NotBlank.class)
+                    && !field.isAnnotationPresent(NotEmpty.class)
+                    && (schema == null || schema.requiredMode() != Schema.RequiredMode.REQUIRED)) {
+                headerName = "（可选）" + headerName;
+            }
             headerList.add(headerName);
             exampleList.add(example);
+
+            // 收集下拉配置：传参 > @ExcelDropdown
+            if (fieldDropdownMap != null && fieldDropdownMap.containsKey(field.getName())) {
+                // 取 label 作为下拉展示值
+                List<DropdownOption> opts = fieldDropdownMap.get(field.getName());
+                if (opts != null && !opts.isEmpty()) {
+                    List<String> labels = new ArrayList<>();
+                    for (DropdownOption opt : opts) {
+                        labels.add(opt.getLabel());
+                    }
+                    dropdownMap.put(colIndex, labels.toArray(new String[0]));
+                }
+            } else if (field.isAnnotationPresent(ExcelDropdown.class)) {
+                // 硬编码下拉选项
+                ExcelDropdown dropdown = field.getAnnotation(ExcelDropdown.class);
+                dropdownMap.put(colIndex, dropdown.options());
+            }
+            colIndex++;
         }
 
-        // 2. 构造 EasyExcel 要求的表头格式
+        // 2. 构造 EasyExcel 表头格式
         List<List<String>> head = new ArrayList<>();
         for (String header : headerList) {
             List<String> columnHead = new ArrayList<>();
@@ -107,39 +148,36 @@ public class VrvExcelUtils {
 
         // 3. 构造示例数据行
         List<List<String>> data = new ArrayList<>();
-        List<String> exampleRow = new ArrayList<>();
-        for (String example : exampleList) {
-            exampleRow.add(example);
-        }
+        List<String> exampleRow = new ArrayList<>(exampleList);
         data.add(exampleRow);
 
         // 4. 响应头配置
         response.setContentType(MediaType.APPLICATION_OCTET_STREAM_VALUE);
         response.setCharacterEncoding(StandardCharsets.UTF_8.name());
-        // 文件名：优先取类上@Schema的description作为业务中文名，如"场站信息"，否则取类名
-        String bizName = clazz.getSimpleName(); // 兜底用类名
+        String bizName = clazz.getSimpleName();
         Schema classSchema = clazz.getAnnotation(Schema.class);
         if (classSchema != null && classSchema.description() != null && !classSchema.description().isEmpty()) {
             bizName = classSchema.description()
-                    .replace("管理后台 - ", "")       // 去掉"管理后台 - "前缀
-                    .replace(" Request VO", "")        // 去掉" Request VO"后缀
-                    .replace(" 新增", "")              // 去掉" 新增"
-                    .replace(" 创建", "")              // 去掉" 创建"
-                    .replace("新增/修改", "")          // 去掉"新增/修改"
-                    .replaceAll("[\\s\\-]+$", "")      // 去掉尾部空格和横线
+                    .replace("管理后台 - ", "")
+                    .replace(" Request VO", "")
+                    .replace(" 新增", "")
+                    .replace(" 创建", "")
+                    .replace("新增/修改", "")
+                    .replaceAll("[\\s\\-]+$", "")
                     .trim();
         }
-        // 文件名加日期，如 场站信息_导入模板_20260521.xlsx
         String timeStr = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMdd"));
         String fileName = URLEncoder.encode(bizName + "_导入模板_" + timeStr + ".xlsx", StandardCharsets.UTF_8);
         response.setHeader("Content-Disposition", "attachment; filename*=" + fileName);
 
-        // 5. EasyExcel 写出
-        EasyExcel.write(response.getOutputStream())
+        // 5. EasyExcel 写出（含下拉框处理器）
+        ExcelWriterBuilder easyExcel = EasyExcel.write(response.getOutputStream())
                 .head(head)
-                .registerWriteHandler(new LongestMatchColumnWidthStyleStrategy())
-                .sheet("导入模板")
-                .doWrite(data);
+                .registerWriteHandler(new LongestMatchColumnWidthStyleStrategy());
+        if (!dropdownMap.isEmpty()) {
+            easyExcel.registerWriteHandler(new ExcelDropdownWriteHandler(dropdownMap));
+        }
+        easyExcel.sheet("导入模板").doWrite(data);
     }
 
     /**
@@ -275,25 +313,56 @@ public class VrvExcelUtils {
 
 
     /**
-     * Excel 文件导入解析为实体列表
-     * <p>读取 Excel 文件，按字段声明顺序映射到目标实体类，支持多种日期格式自动解析。
-     * <p>注意：Excel 列顺序必须与 targetClass 字段声明顺序一致（跳过 @ExcelIgnore 字段）。
-     * <p>缺点：Excel 的字段顺序必须和参数 targetClass 全类名的字段顺序一样
-     * <p>参数 targetClass 是指类名（全类名），通常用 .getClass().getName() 得到，
-     * 如 cn.iocoder.yudao.module.industry.controller.admin.importer.ImportVO
-     * <p>评价：4
-     *
-     * <pre>
-     * 版本历史：
-     *   V1 2026-04-07 —— 初始版本：Excel 读取 → 类型转换 → 实体列表输出，支持调试模式
-     *   V2 2026-05-09 10:07 —— 导入时跳过 @ExcelIgnore 字段，与下载模板列序保持一致
-     *   V3 2026-05-09 10:07 —— 错误提示中文化：字段名→@Schema中文名，类型→中文描述，附带示例值
-     *                          Boolean 支持填"是/否"（兼容 true/false）
-     * </pre>
+     * Excel 导入（无标签映射，向后兼容）
      */
     public static <T> Map<String, Object> importExcelAndReturnEntity(
             MultipartFile file,
             String targetClassName
+    ) throws IOException, ClassNotFoundException, NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException {
+        return importExcelAndReturnEntity(file, targetClassName, null);
+    }
+
+    /**
+     * Excel 文件导入解析为实体列表（支持 DropdownOption 标签→真值映射）
+     * <p>配合下载模板下拉使用，用户选"张三"，自动转为 10001。
+     *
+     * @param file                上传的 Excel 文件
+     * @param targetClassName     目标实体类全类名
+     * @param fieldDropdownOptions 下拉选项（展示值+真值），key=字段名（可为 null）
+     *
+     * <pre>
+     * 版本历史：
+     *   V4 2026-05-26 18:00 —— 新增 DropdownOption 参数，支持标签→真值自动转换
+     * </pre>
+     */
+    public static <T> Map<String, Object> importExcelAndReturnEntity(
+            MultipartFile file,
+            String targetClassName,
+            Map<String, List<DropdownOption>> fieldDropdownOptions
+    ) throws IOException, ClassNotFoundException, NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException {
+
+        // 构建标签→真值映射：{字段名: {label: value}}
+        Map<String, Map<String, Object>> labelValueMap = null;
+        if (fieldDropdownOptions != null && !fieldDropdownOptions.isEmpty()) {
+            labelValueMap = new LinkedHashMap<>();
+            for (Map.Entry<String, List<DropdownOption>> entry : fieldDropdownOptions.entrySet()) {
+                Map<String, Object> mapping = new LinkedHashMap<>();
+                for (DropdownOption opt : entry.getValue()) {
+                    mapping.put(opt.getLabel(), opt.getValue());
+                }
+                labelValueMap.put(entry.getKey(), mapping);
+            }
+        }
+        return importExcelWithMapping(file, targetClassName, labelValueMap);
+    }
+
+    /**
+     * 导入核心实现（内部使用 label→value 映射做转换）
+     */
+    private static <T> Map<String, Object> importExcelWithMapping(
+            MultipartFile file,
+            String targetClassName,
+            Map<String, Map<String, Object>> labelValueMap
     ) throws IOException, ClassNotFoundException, NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException {
         //调试flag
         boolean debugFlag=true;
@@ -368,6 +437,18 @@ public class VrvExcelUtils {
 
                 Object value = row.get(colIndex);
                 colIndex++;
+
+                // 标签→真值转换：如 "张三" → 10001（配合 DropdownOption 使用）
+                if (labelValueMap != null && value != null) {
+                    Map<String, Object> mapping = labelValueMap.get(fieldName);
+                    if (mapping != null) {
+                        Object realValue = mapping.get(value.toString().trim());
+                        if (realValue != null) {
+                            value = realValue;
+                        }
+                    }
+                }
+
                 if (value != null) {
                     if (debugFlag){
                         System.out.println("cs2026-01-06 11:47:10:value:"+value);

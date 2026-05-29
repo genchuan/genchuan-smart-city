@@ -17,6 +17,8 @@ import cn.iocoder.yudao.module.stationresource.controller.admin.stationresource.
 import cn.iocoder.yudao.module.stationresource.controller.admin.stationresource.areamgmt.areainfo.vo.statistics.StationCountBarItemVO;
 import cn.iocoder.yudao.module.stationresource.dal.dataobject.stationresource.areamgmt.areainfo.AreaInfoDO;
 import cn.iocoder.yudao.module.stationresource.dal.mysql.stationresource.areamgmt.areainfo.AreaInfoMapper;
+import cn.iocoder.yudao.module.stationresource.dal.mysql.stationresource.stationmgmt.stationinfo.StationInfoMapper;
+import cn.iocoder.yudao.module.stationresource.dal.dataobject.stationresource.stationmgmt.stationinfo.StationInfoDO;
 import cn.iocoder.yudao.module.stationresource.vrv.utils.common.excel.VrvExcelUtils;
 import cn.iocoder.yudao.module.stationresource.vrv.utils.procom.address.AddressToLatLonUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
@@ -54,6 +56,9 @@ public class AreaInfoServiceImpl implements AreaInfoService {
 
     @Resource
     private AreaInfoMapper areaInfoMapper;
+
+    @Resource
+    private StationInfoMapper stationInfoMapper;
 
     @Override
     @Transactional(rollbackFor = Exception.class)
@@ -120,12 +125,22 @@ public class AreaInfoServiceImpl implements AreaInfoService {
             if (item.getLat() == null) item.setLat(24.896541);
         });
 
-        // ===================== 3. 柱状图数据 =====================
+        // ===================== 3. 从场站表查询真实场站数（按片区分组） =====================
+        List<StationInfoDO> allStations = stationInfoMapper.selectList(
+                new LambdaQueryWrapper<StationInfoDO>().eq(StationInfoDO::getDeleted, false));
+        // 按片区ID分组统计场站数
+        Map<Long, Long> areaStationCountMap = allStations.stream()
+                .filter(s -> s.getAreaId() != null)
+                .collect(java.util.stream.Collectors.groupingBy(
+                        StationInfoDO::getAreaId,
+                        java.util.stream.Collectors.counting()));
+
+        // 柱状图数据：用真实场站数
         List<StationCountBarItemVO> barList = areaList.stream().map(area -> {
             StationCountBarItemVO bar = new StationCountBarItemVO();
             bar.setAreaId(area.getId());
             bar.setName(area.getName());
-            bar.setValue(area.getStationCount() == null ? 0 : area.getStationCount());
+            bar.setValue(areaStationCountMap.getOrDefault(area.getId(), 0L).intValue());
             return bar;
         }).toList();
 
@@ -133,11 +148,8 @@ public class AreaInfoServiceImpl implements AreaInfoService {
         AreaChartCardVO card = new AreaChartCardVO();
         // 总片区数
         card.setTotalAreaCount(areaList.size());
-        // 总场站数（求和）
-        int totalStation = areaList.stream()
-                .mapToInt(area -> area.getStationCount() == null ? 0 : area.getStationCount())
-                .sum();
-        card.setTotalStationCount(totalStation);
+        // 总场站数：从场站表真实统计
+        card.setTotalStationCount(allStations.size());
 
         // ===================== 封装返回 =====================
         resp.setAreaMapList(mapList);
