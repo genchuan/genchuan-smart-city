@@ -34,6 +34,8 @@ public interface SettleBillMapper extends BaseMapperX<SettleBillDO> {
             "<if test='req.billNo != null and req.billNo != \"\"'>AND sb.bill_no LIKE CONCAT('%', #{req.billNo}, '%') </if>" +
             "<if test='req.partnerId != null'>AND sb.partner_id = #{req.partnerId} </if>" +
             "<if test='req.status != null and req.status != \"\"'>AND sb.status = #{req.status} </if>" +
+            "<if test='req.createTimeStart != null'>AND sb.create_time &gt;= #{req.createTimeStart} </if>" +
+            "<if test='req.createTimeEnd != null'>AND sb.create_time &lt;= #{req.createTimeEnd} </if>" +
             "ORDER BY sb.id DESC" +
             "</script>")
     IPage<SettleBillDO> selectPageWithPartner(Page<SettleBillDO> page, @Param("req") SettleBillPageReqVO reqVO);
