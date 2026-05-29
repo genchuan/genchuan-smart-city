@@ -6,6 +6,7 @@ import cn.iocoder.yudao.framework.common.exception.ServiceException;
 import cn.iocoder.yudao.framework.security.core.LoginUser;
 import cn.iocoder.yudao.framework.security.core.util.SecurityFrameworkUtils;
 import cn.iocoder.yudao.module.system.api.user.AdminUserApi;
+import cn.iocoder.yudao.module.usermerchant.framework.commom.utils.ImportValidator;
 import cn.iocoder.yudao.module.usermerchant.framework.commom.utils.NameQueryHelper;
 import cn.iocoder.yudao.module.usermerchant.framework.commom.utils.TimeRangeParser;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
@@ -144,32 +145,18 @@ public class MerchantInfoServiceImpl implements MerchantInfoService {
         if (CollectionUtils.isEmpty(list)) {
             return true;
         }
+        int rowNum = 2;
         for (MerchantInfoImportExcelVO vo : list) {
-            if (vo.getId() != null) {
-                MerchantInfoDO existDO = merchantInfoMapper.selectById(vo.getId());
-                if (existDO != null) {
-                    if (Boolean.TRUE.equals(updateSupport)) {
-                        // 更新：复制属性，但保护创建信息
-                        MerchantInfoDO updateDO = BeanUtils.toBean(vo, MerchantInfoDO.class);
-                        updateDO.setCreator(null);
-                        updateDO.setCreateTime(null);
-                        merchantInfoMapper.updateById(updateDO);
-                    } else {
-                        // updateSupport = false，跳过该条记录
-                        continue;
-                    }
-                } else {
-                    // ID 不存在，按新增处理（忽略用户提供的 ID，由数据库自增）
-                    MerchantInfoDO insertDO = BeanUtils.toBean(vo, MerchantInfoDO.class);
-                    insertDO.setId(null);
-                    merchantInfoMapper.insert(insertDO);
-                }
-            } else {
-                // 无 ID，直接新增
-                MerchantInfoDO insertDO = BeanUtils.toBean(vo, MerchantInfoDO.class);
-                merchantInfoMapper.insert(insertDO);
-            }
+            ImportValidator.validateRequiredFields(vo, rowNum);
+            // 直接新增，忽略用户传入的 ID，由数据库自增生成
+            MerchantInfoDO insertDO = BeanUtils.toBean(vo, MerchantInfoDO.class);
+            insertDO.setId(null);   // 确保 ID 不传入，使用数据库自增
+            insertDO.setStatus("待审核");
+            merchantInfoMapper.insert(insertDO);
         }
+        // 记录操作日志上下文
+        LogRecordContext.putVariable("list", list);
+        LogRecordContext.putVariable("updateSupport", updateSupport);
         return true;
     }
 
@@ -270,7 +257,7 @@ public class MerchantInfoServiceImpl implements MerchantInfoService {
 
         // 总数统计
         chartRespVO.setTotalMerchantCount(merchantInfoMapper.selectTotalMerchantCount(start, end));
-        chartRespVO.setNewMerchantCount(merchantInfoMapper.selectNewMerchantCount(start, end));
+        chartRespVO.setNewMerchantCount(merchantInfoMapper.selectNewMerchantCount(LocalDateTime.now().minusDays(30), LocalDateTime.now()));
 
         return chartRespVO;
     }

@@ -25,8 +25,8 @@
         SELECT ROUND(AVG(credit_score), 0)
         FROM user_credit
         WHERE deleted = 0
-        <if test="start != null">AND create_time >= #{start}</if>
-        <if test="end != null">AND create_time &lt;= #{end}</if>
+<!--        <if test="start != null">AND create_time >= #{start}</if>-->
+<!--        <if test="end != null">AND create_time &lt;= #{end}</if>-->
     </select>
 
     <!-- 低信用用户数（信用等级为较差或极差） -->

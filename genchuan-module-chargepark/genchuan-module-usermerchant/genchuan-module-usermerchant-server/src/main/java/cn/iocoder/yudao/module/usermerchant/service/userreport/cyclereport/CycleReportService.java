@@ -47,4 +47,5 @@ public interface CycleReportService {
      */
     CycleReportChartRespVO getChartData(CycleReportChartReqVO reqVO);
 
+    void incrementExportCountByIds(List<Long> ids);
 }

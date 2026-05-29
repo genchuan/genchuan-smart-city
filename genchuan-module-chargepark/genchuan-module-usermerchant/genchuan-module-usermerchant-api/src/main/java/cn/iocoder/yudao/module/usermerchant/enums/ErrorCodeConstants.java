@@ -8,6 +8,8 @@ import cn.iocoder.yudao.framework.common.exception.ErrorCode;
  */
 public interface ErrorCodeConstants {
 
+    ErrorCode EMPTY_LIST = new ErrorCode(500, "数据为空");
+    ErrorCode ILLEGAL_FORMAT = new ErrorCode(500, "不合法的格式");
     ErrorCode ILLEGAL_STATUS = new ErrorCode(500, "不合法的状态");
     // ========== 用户信息==========
     ErrorCode USER_INFO_NOT_EXISTS = new ErrorCode(500, "用户信息不存在");

@@ -1,5 +1,9 @@
 package cn.iocoder.yudao.module.usermerchant.controller.admin.groupclient.groupinfo;
 
+import cn.idev.excel.util.StringUtils;
+import cn.iocoder.yudao.framework.common.exception.ServiceException;
+import cn.iocoder.yudao.module.usermerchant.controller.admin.groupclient.groupcar.vo.GroupCarImportExcelVO;
+import com.alibaba.nacos.client.naming.utils.CollectionUtils;
 import io.swagger.v3.oas.annotations.Parameters;
 import org.springframework.web.bind.annotation.*;
 import jakarta.annotation.Resource;
@@ -24,6 +28,8 @@ import cn.iocoder.yudao.framework.excel.core.util.ExcelUtils;
 
 import cn.iocoder.yudao.framework.apilog.core.annotation.ApiAccessLog;
 import static cn.iocoder.yudao.framework.apilog.core.enums.OperateTypeEnum.*;
+import static cn.iocoder.yudao.module.usermerchant.enums.ErrorCodeConstants.EMPTY_LIST;
+import static cn.iocoder.yudao.module.usermerchant.enums.ErrorCodeConstants.ILLEGAL_FORMAT;
 
 import cn.iocoder.yudao.module.usermerchant.controller.admin.groupclient.groupinfo.vo.*;
 import cn.iocoder.yudao.module.usermerchant.dal.dataobject.groupclient.groupinfo.GroupInfoDO;
@@ -65,6 +71,16 @@ public class GroupInfoController {
     public CommonResult<Boolean> importExcel(@RequestParam("file") MultipartFile file,
                                              @RequestParam(value = "updateSupport", required = false, defaultValue = "false") Boolean updateSupport) throws Exception {
         List<GroupInfoImportExcelVO> list = ExcelUtils.read(file, GroupInfoImportExcelVO.class);
+        // 校验是否为空
+        if (CollectionUtils.isEmpty(list)) {
+            throw new ServiceException(EMPTY_LIST);
+        }
+
+        // 校验第一条有效数据（第2行）是否有必填字段值（防止列头完全不匹配）
+        GroupInfoImportExcelVO firstRow = list.get(0);
+        if (StringUtils.isBlank(firstRow.getName())) {
+            throw new ServiceException(ILLEGAL_FORMAT);
+        }
         return success(groupInfoService.importGroups(list, updateSupport));
     }
 
@@ -72,7 +88,15 @@ public class GroupInfoController {
     @Operation(summary = "下载集团信息导入模板")
     @PreAuthorize("@ss.hasPermission('usermerchant:group-info:import')")
     public void downloadImportTemplate(HttpServletResponse response) throws IOException {
-        List<GroupInfoImportExcelVO> emptyList = Collections.emptyList();
+        GroupInfoImportExcelVO example = GroupInfoImportExcelVO.builder()
+                .name("示例集团")
+                .contact("示例联系人")
+                .phone("12345678901")
+                .groupType("企业单位")
+                .address("福建省泉州市丰泽区xx街道xx社区")
+                .remark("text")
+                .build();
+        List<GroupInfoImportExcelVO> emptyList = Collections.singletonList(example);
         ExcelUtils.write(response, "集团信息导入模板.xlsx", "集团信息", GroupInfoImportExcelVO.class, emptyList);
     }
 

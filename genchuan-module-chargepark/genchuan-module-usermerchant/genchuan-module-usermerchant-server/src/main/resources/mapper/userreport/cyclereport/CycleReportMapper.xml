@@ -20,7 +20,12 @@
         COUNT(*) AS count
         FROM user_info
         WHERE deleted = 0
-        AND create_time BETWEEN #{start} AND #{end}
+        <if test="start != null">
+            AND create_time >= #{start}
+        </if>
+        <if test="end != null">
+            AND create_time &lt;= #{end}
+        </if>
         GROUP BY date
         ORDER BY date ASC
     </select>
@@ -36,7 +41,12 @@
         COUNT(*) AS count
         FROM plate_auth
         WHERE deleted = 0
-        AND create_time BETWEEN #{start} AND #{end}
+        <if test="start != null">
+            AND create_time >= #{start}
+        </if>
+        <if test="end != null">
+            AND create_time &lt;= #{end}
+        </if>
         GROUP BY date
         ORDER BY date ASC
     </select>
@@ -52,8 +62,13 @@
         COALESCE(SUM(amount), 0) AS amount
         FROM merchant_recharge
         WHERE deleted = 0
-        AND status = '已支付'
-        AND create_time BETWEEN #{start} AND #{end}
+        AND status = '已生效'
+        <if test="start != null">
+            AND create_time >= #{start}
+        </if>
+        <if test="end != null">
+            AND create_time &lt;= #{end}
+        </if>
         GROUP BY date
         ORDER BY date ASC
     </select>
@@ -69,7 +84,12 @@
         COUNT(*) AS count
         FROM merchant_send_coupon
         WHERE deleted = 0
-        AND create_time BETWEEN #{start} AND #{end}
+        <if test="start != null">
+            AND create_time >= #{start}
+        </if>
+        <if test="end != null">
+            AND create_time &lt;= #{end}
+        </if>
         GROUP BY date
         ORDER BY date ASC
     </select>
@@ -79,7 +99,12 @@
         SELECT user_type AS name, COUNT(*) AS value
         FROM user_info
         WHERE deleted = 0
-          AND create_time BETWEEN #{start} AND #{end}
+        <if test="start != null">
+            AND create_time >= #{start}
+        </if>
+        <if test="end != null">
+            AND create_time &lt;= #{end}
+        </if>
         GROUP BY user_type
     </select>
 
@@ -88,7 +113,12 @@
         SELECT car_type AS name, COUNT(*) AS value
         FROM user_car
         WHERE deleted = 0
-          AND create_time BETWEEN #{start} AND #{end}
+        <if test="start != null">
+            AND create_time >= #{start}
+        </if>
+        <if test="end != null">
+            AND create_time &lt;= #{end}
+        </if>
         GROUP BY car_type
     </select>
 
@@ -97,7 +127,12 @@
         SELECT merchant_type AS name, COUNT(*) AS value
         FROM merchant_info
         WHERE deleted = 0
-          AND create_time BETWEEN #{start} AND #{end}
+        <if test="start != null">
+            AND create_time >= #{start}
+        </if>
+        <if test="end != null">
+            AND create_time &lt;= #{end}
+        </if>
         GROUP BY merchant_type
     </select>
 
@@ -106,7 +141,12 @@
         SELECT group_type AS name, COUNT(*) AS value
         FROM group_info
         WHERE deleted = 0
-          AND create_time BETWEEN #{start} AND #{end}
+        <if test="start != null">
+            AND create_time >= #{start}
+        </if>
+        <if test="end != null">
+            AND create_time &lt;= #{end}
+        </if>
         GROUP BY group_type
     </select>
 
@@ -115,7 +155,12 @@
         SELECT credit_level AS name, COUNT(*) AS value
         FROM user_credit
         WHERE deleted = 0
-          AND create_time BETWEEN #{start} AND #{end}
+        <if test="start != null">
+            AND create_time >= #{start}
+        </if>
+        <if test="end != null">
+            AND create_time &lt;= #{end}
+        </if>
         GROUP BY credit_level
     </select>
 
@@ -123,9 +168,14 @@
     <select id="selectMemberLevelDistribution" resultType="java.util.HashMap">
         SELECT ml.name AS name, COUNT(*) AS value
         FROM member_user mu
-                 LEFT JOIN member_level ml ON mu.level_id = ml.id AND ml.deleted = 0
+        LEFT JOIN member_level ml ON mu.level_id = ml.id AND ml.deleted = 0
         WHERE mu.deleted = 0
-          AND mu.create_time BETWEEN #{start} AND #{end}
+        <if test="start != null">
+            AND mu.create_time >= #{start}
+        </if>
+        <if test="end != null">
+            AND mu.create_time &lt;= #{end}
+        </if>
         GROUP BY ml.name
     </select>
 

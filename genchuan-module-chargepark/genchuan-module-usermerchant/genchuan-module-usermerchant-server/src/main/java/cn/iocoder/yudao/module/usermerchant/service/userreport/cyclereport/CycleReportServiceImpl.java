@@ -1,5 +1,6 @@
 package cn.iocoder.yudao.module.usermerchant.service.userreport.cyclereport;
 
+import cn.hutool.core.collection.CollUtil;
 import cn.iocoder.yudao.module.usermerchant.controller.admin.userreport.cyclereport.vo.*;
 import cn.iocoder.yudao.module.usermerchant.dal.dataobject.creditmgmt.usercredit.UserCreditDO;
 import cn.iocoder.yudao.module.usermerchant.dal.dataobject.groupclient.groupinfo.GroupInfoDO;
@@ -25,6 +26,7 @@ import cn.iocoder.yudao.module.usermerchant.dal.mysql.usermgmt.userinfo.UserInfo
 import cn.iocoder.yudao.module.usermerchant.dal.mysql.userreport.cyclereport.CycleReportMapper;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.mzt.logapi.context.LogRecordContext;
 import com.mzt.logapi.starter.annotation.LogRecord;
 import static cn.iocoder.yudao.module.usermerchant.enums.LogRecordConstants.*;
@@ -228,6 +230,9 @@ public class CycleReportServiceImpl implements CycleReportService {
     }
 
     private String inferGranularity(String reportCycle) {
+        if (reportCycle == null) {
+            return "day";  // 默认按日粒度
+        }
         if (reportCycle.contains("日") || reportCycle.contains("周")) return "day";
         if (reportCycle.contains("月") || reportCycle.contains("季") || reportCycle.contains("半年")) return "month";
         if (reportCycle.contains("年")) return "year";
@@ -242,74 +247,169 @@ public class CycleReportServiceImpl implements CycleReportService {
      * @return 卡片数据
      */
     private CycleReportChartRespVO.CardData computeCardData(LocalDateTime start, LocalDateTime end) {
+//        CycleReportChartRespVO.CardData cardData = new CycleReportChartRespVO.CardData();
+//
+//        // 新增用户数
+//        Long newUserCount = userInfoMapper.selectCount(new LambdaQueryWrapper<UserInfoDO>()
+//                .between(UserInfoDO::getCreateTime, start, end)
+//                .eq(UserInfoDO::getDeleted, 0));
+//        cardData.setNewUserCount(newUserCount.intValue());
+//
+//        // 绑定车辆数
+//        Long bindCarCount = userCarMapper.selectCount(new LambdaQueryWrapper<UserCarDO>()
+//                .between(UserCarDO::getCreateTime, start, end)
+//                .eq(UserCarDO::getDeleted, 0));
+//        cardData.setBindCarCount(bindCarCount.intValue());
+//
+//        // 车牌认证量
+//        Long plateAuthCount = plateAuthMapper.selectCount(new LambdaQueryWrapper<PlateAuthDO>()
+//                .between(PlateAuthDO::getCreateTime, start, end)
+//                .eq(PlateAuthDO::getDeleted, 0));
+//        cardData.setPlateAuthCount(plateAuthCount.intValue());
+//
+//        // 新增商户数
+//        Long newMerchantCount = merchantInfoMapper.selectCount(new LambdaQueryWrapper<MerchantInfoDO>()
+//                .between(MerchantInfoDO::getCreateTime, start, end)
+//                .eq(MerchantInfoDO::getDeleted, 0));
+//        cardData.setNewMerchantCount(newMerchantCount.intValue());
+//
+//        // 对接商户数
+//        Long linkMerchantCount = merchantLinkMapper.selectCount(new LambdaQueryWrapper<MerchantLinkDO>()
+//                .between(MerchantLinkDO::getCreateTime, start, end)
+//                .eq(MerchantLinkDO::getDeleted, 0));
+//        cardData.setLinkMerchantCount(linkMerchantCount.intValue());
+//
+//        // 充值金额（只统计 status = '已支付'）
+//        QueryWrapper<MerchantRechargeDO> rechargeWrapper = new QueryWrapper<>();
+//        rechargeWrapper.select("COALESCE(SUM(amount), 0)")
+//                .between("create_time", start, end)
+//                .eq("status", "已支付")
+//                .eq("deleted", 0);
+//        BigDecimal rechargeAmount = (BigDecimal) merchantRechargeMapper.selectObjs(rechargeWrapper).get(0);
+//        cardData.setRechargeAmount(rechargeAmount != null ? rechargeAmount : BigDecimal.ZERO);
+//
+//        // 发券量
+//        Long sendCouponCount = merchantSendCouponMapper.selectCount(new LambdaQueryWrapper<MerchantSendCouponDO>()
+//                .between(MerchantSendCouponDO::getCreateTime, start, end)
+//                .eq(MerchantSendCouponDO::getDeleted, 0));
+//        cardData.setSendCouponCount(sendCouponCount.intValue());
+//
+//        // 新增集团数
+//        Long newGroupCount = groupInfoMapper.selectCount(new LambdaQueryWrapper<GroupInfoDO>()
+//                .between(GroupInfoDO::getCreateTime, start, end)
+//                .eq(GroupInfoDO::getDeleted, 0));
+//        cardData.setNewGroupCount(newGroupCount.intValue());
+//
+//        // 会员新增数
+//        Long newMemberCount = memberUserMapper.selectCount(new LambdaQueryWrapper<MemberUserDO>()
+//                .between(MemberUserDO::getCreateTime, start, end)
+//                .eq(MemberUserDO::getDeleted, 0));
+//        cardData.setNewMemberCount(newMemberCount.intValue());
+//
+//        // 平均信用分
+////        QueryWrapper<UserCreditDO> creditWrapper = new QueryWrapper<>();
+////        creditWrapper.select("COALESCE(AVG(credit_score), 0)")
+////                .between("create_time", start, end)
+////                .eq("deleted", 0);
+////        BigDecimal avgCredit = (BigDecimal) userCreditMapper.selectObjs(creditWrapper).get(0);
+////        cardData.setAvgCreditScore(avgCredit != null ? avgCredit.intValue() : 0);
+//
+//        Integer avgScore = userCreditMapper.selectAvgCreditScore(start, end);
+//        cardData.setAvgCreditScore(avgScore != null ? avgScore : 0);
+//
+//        return cardData;
         CycleReportChartRespVO.CardData cardData = new CycleReportChartRespVO.CardData();
 
         // 新增用户数
-        Long newUserCount = userInfoMapper.selectCount(new LambdaQueryWrapper<UserInfoDO>()
-                .between(UserInfoDO::getCreateTime, start, end)
-                .eq(UserInfoDO::getDeleted, 0));
+        LambdaQueryWrapper<UserInfoDO> userWrapper = new LambdaQueryWrapper<>();
+        if (start != null) userWrapper.ge(UserInfoDO::getCreateTime, start);
+        if (end != null) userWrapper.le(UserInfoDO::getCreateTime, end);
+        userWrapper.eq(UserInfoDO::getDeleted, 0);
+        Long newUserCount = userInfoMapper.selectCount(userWrapper);
         cardData.setNewUserCount(newUserCount.intValue());
 
         // 绑定车辆数
-        Long bindCarCount = userCarMapper.selectCount(new LambdaQueryWrapper<UserCarDO>()
-                .between(UserCarDO::getCreateTime, start, end)
-                .eq(UserCarDO::getDeleted, 0));
+        LambdaQueryWrapper<UserCarDO> carWrapper = new LambdaQueryWrapper<>();
+        if (start != null) carWrapper.ge(UserCarDO::getCreateTime, start);
+        if (end != null) carWrapper.le(UserCarDO::getCreateTime, end);
+        carWrapper.eq(UserCarDO::getDeleted, 0);
+        Long bindCarCount = userCarMapper.selectCount(carWrapper);
         cardData.setBindCarCount(bindCarCount.intValue());
 
         // 车牌认证量
-        Long plateAuthCount = plateAuthMapper.selectCount(new LambdaQueryWrapper<PlateAuthDO>()
-                .between(PlateAuthDO::getCreateTime, start, end)
-                .eq(PlateAuthDO::getDeleted, 0));
+        LambdaQueryWrapper<PlateAuthDO> authWrapper = new LambdaQueryWrapper<>();
+        if (start != null) authWrapper.ge(PlateAuthDO::getCreateTime, start);
+        if (end != null) authWrapper.le(PlateAuthDO::getCreateTime, end);
+        authWrapper.eq(PlateAuthDO::getDeleted, 0);
+        Long plateAuthCount = plateAuthMapper.selectCount(authWrapper);
         cardData.setPlateAuthCount(plateAuthCount.intValue());
 
         // 新增商户数
-        Long newMerchantCount = merchantInfoMapper.selectCount(new LambdaQueryWrapper<MerchantInfoDO>()
-                .between(MerchantInfoDO::getCreateTime, start, end)
-                .eq(MerchantInfoDO::getDeleted, 0));
+        LambdaQueryWrapper<MerchantInfoDO> merchantWrapper = new LambdaQueryWrapper<>();
+        if (start != null) merchantWrapper.ge(MerchantInfoDO::getCreateTime, start);
+        if (end != null) merchantWrapper.le(MerchantInfoDO::getCreateTime, end);
+        merchantWrapper.eq(MerchantInfoDO::getDeleted, 0);
+        Long newMerchantCount = merchantInfoMapper.selectCount(merchantWrapper);
         cardData.setNewMerchantCount(newMerchantCount.intValue());
 
         // 对接商户数
-        Long linkMerchantCount = merchantLinkMapper.selectCount(new LambdaQueryWrapper<MerchantLinkDO>()
-                .between(MerchantLinkDO::getCreateTime, start, end)
-                .eq(MerchantLinkDO::getDeleted, 0));
+        LambdaQueryWrapper<MerchantLinkDO> linkWrapper = new LambdaQueryWrapper<>();
+        if (start != null) linkWrapper.ge(MerchantLinkDO::getCreateTime, start);
+        if (end != null) linkWrapper.le(MerchantLinkDO::getCreateTime, end);
+        linkWrapper.eq(MerchantLinkDO::getDeleted, 0);
+        Long linkMerchantCount = merchantLinkMapper.selectCount(linkWrapper);
         cardData.setLinkMerchantCount(linkMerchantCount.intValue());
 
         // 充值金额（只统计 status = '已支付'）
         QueryWrapper<MerchantRechargeDO> rechargeWrapper = new QueryWrapper<>();
         rechargeWrapper.select("COALESCE(SUM(amount), 0)")
-                .between("create_time", start, end)
                 .eq("status", "已支付")
                 .eq("deleted", 0);
+        if (start != null) rechargeWrapper.ge("create_time", start);
+        if (end != null) rechargeWrapper.le("create_time", end);
         BigDecimal rechargeAmount = (BigDecimal) merchantRechargeMapper.selectObjs(rechargeWrapper).get(0);
         cardData.setRechargeAmount(rechargeAmount != null ? rechargeAmount : BigDecimal.ZERO);
 
         // 发券量
-        Long sendCouponCount = merchantSendCouponMapper.selectCount(new LambdaQueryWrapper<MerchantSendCouponDO>()
-                .between(MerchantSendCouponDO::getCreateTime, start, end)
-                .eq(MerchantSendCouponDO::getDeleted, 0));
+        LambdaQueryWrapper<MerchantSendCouponDO> couponWrapper = new LambdaQueryWrapper<>();
+        if (start != null) couponWrapper.ge(MerchantSendCouponDO::getCreateTime, start);
+        if (end != null) couponWrapper.le(MerchantSendCouponDO::getCreateTime, end);
+        couponWrapper.eq(MerchantSendCouponDO::getDeleted, 0);
+        Long sendCouponCount = merchantSendCouponMapper.selectCount(couponWrapper);
         cardData.setSendCouponCount(sendCouponCount.intValue());
 
         // 新增集团数
-        Long newGroupCount = groupInfoMapper.selectCount(new LambdaQueryWrapper<GroupInfoDO>()
-                .between(GroupInfoDO::getCreateTime, start, end)
-                .eq(GroupInfoDO::getDeleted, 0));
+        LambdaQueryWrapper<GroupInfoDO> groupWrapper = new LambdaQueryWrapper<>();
+        if (start != null) groupWrapper.ge(GroupInfoDO::getCreateTime, start);
+        if (end != null) groupWrapper.le(GroupInfoDO::getCreateTime, end);
+        groupWrapper.eq(GroupInfoDO::getDeleted, 0);
+        Long newGroupCount = groupInfoMapper.selectCount(groupWrapper);
         cardData.setNewGroupCount(newGroupCount.intValue());
 
         // 会员新增数
-        Long newMemberCount = memberUserMapper.selectCount(new LambdaQueryWrapper<MemberUserDO>()
-                .between(MemberUserDO::getCreateTime, start, end)
-                .eq(MemberUserDO::getDeleted, 0));
+        LambdaQueryWrapper<MemberUserDO> memberWrapper = new LambdaQueryWrapper<>();
+        if (start != null) memberWrapper.ge(MemberUserDO::getCreateTime, start);
+        if (end != null) memberWrapper.le(MemberUserDO::getCreateTime, end);
+        memberWrapper.eq(MemberUserDO::getDeleted, 0);
+        Long newMemberCount = memberUserMapper.selectCount(memberWrapper);
         cardData.setNewMemberCount(newMemberCount.intValue());
 
         // 平均信用分
-        QueryWrapper<UserCreditDO> creditWrapper = new QueryWrapper<>();
-        creditWrapper.select("COALESCE(AVG(credit_score), 0)")
-                .between("create_time", start, end)
-                .eq("deleted", 0);
-        BigDecimal avgCredit = (BigDecimal) userCreditMapper.selectObjs(creditWrapper).get(0);
-        cardData.setAvgCreditScore(avgCredit != null ? avgCredit.intValue() : 0);
+        Integer avgScore = userCreditMapper.selectAvgCreditScore(start, end);
+        cardData.setAvgCreditScore(avgScore != null ? avgScore : 0);
 
         return cardData;
+    }
+
+    @Override
+    public void incrementExportCountByIds(List<Long> ids) {
+        if (CollUtil.isEmpty(ids)) {
+            return;
+        }
+        LambdaUpdateWrapper<CycleReportDO> wrapper = new LambdaUpdateWrapper<>();
+        wrapper.in(CycleReportDO::getId, ids)
+                .setSql("export_count = export_count + 1");
+        cycleReportMapper.update(null, wrapper);
     }
 
 }

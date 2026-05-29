@@ -169,11 +169,11 @@ public class MerchantRechargeServiceImpl implements MerchantRechargeService {
         if ("确认".equals(code)) {
             // 校验状态和确认时间
             for (MerchantRechargeDO recharge : recharges) {
-                if (!"已支付".equals(recharge.getStatus())) {
-                    throw new ServiceException(ILLEGAL_STATUS);
-                }
-                if (recharge.getConfirmTime() != null) {
+                if ("已生效".equals(recharge.getStatus())) {
                     throw new ServiceException(ILLEGAL_STATUS); // 已确认过
+                }
+                if (!"已支付".equals(recharge.getStatus())) {
+                    throw new ServiceException(ILLEGAL_STATUS); // 其他状态
                 }
             }
             // 汇总每个商户的充值金额
@@ -186,6 +186,7 @@ public class MerchantRechargeServiceImpl implements MerchantRechargeService {
             // 批量更新状态为“已支付”并设置确认时间
             UpdateWrapper<MerchantRechargeDO> wrapper = new UpdateWrapper<>();
             wrapper.in("id", ids)
+                    .set("status", "已生效")
                     .set("confirm_time", now);
             merchantRechargeMapper.update(null, wrapper);
 

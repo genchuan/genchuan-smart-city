@@ -84,7 +84,9 @@ public class MemberLevelServiceImpl implements MemberLevelService {
 
     @Override
     public MemberLevelDO getMemberLevel(Long id) {
-        return memberLevelMapper.selectById(id);
+//        return memberLevelMapper.selectById(id);
+        // 调用自定义 Mapper 方法，联表查询并填充 memberCount
+        return memberLevelMapper.selectByIdWithCount(id);
     }
 
 //    @Override

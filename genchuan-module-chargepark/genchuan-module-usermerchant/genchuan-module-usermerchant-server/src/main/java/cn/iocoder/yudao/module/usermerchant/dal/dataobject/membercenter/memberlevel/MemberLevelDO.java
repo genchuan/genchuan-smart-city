@@ -59,6 +59,7 @@ public class MemberLevelDO extends BaseDO {
     /**
      * 该等级下的会员用户数量
      */
+    @TableField(exist = false)
     private Integer memberCount;
 
 

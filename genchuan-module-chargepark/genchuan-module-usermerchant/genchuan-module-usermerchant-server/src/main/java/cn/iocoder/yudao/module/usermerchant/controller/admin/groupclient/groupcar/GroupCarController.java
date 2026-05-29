@@ -1,8 +1,12 @@
 package cn.iocoder.yudao.module.usermerchant.controller.admin.groupclient.groupcar;
 
 import cn.hutool.core.util.StrUtil;
+import cn.idev.excel.util.StringUtils;
+import cn.iocoder.yudao.framework.common.exception.ServiceException;
+import cn.iocoder.yudao.module.usermerchant.controller.admin.merchantmgmt.merchantinfo.vo.MerchantInfoImportExcelVO;
 import cn.iocoder.yudao.module.usermerchant.framework.commom.utils.ChartHelper;
 import cn.iocoder.yudao.module.usermerchant.framework.commom.utils.TimeRangeParser;
+import com.alibaba.nacos.client.naming.utils.CollectionUtils;
 import io.swagger.v3.oas.annotations.Parameters;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -33,6 +37,8 @@ import cn.iocoder.yudao.framework.excel.core.util.ExcelUtils;
 
 import cn.iocoder.yudao.framework.apilog.core.annotation.ApiAccessLog;
 import static cn.iocoder.yudao.framework.apilog.core.enums.OperateTypeEnum.*;
+import static cn.iocoder.yudao.module.usermerchant.enums.ErrorCodeConstants.EMPTY_LIST;
+import static cn.iocoder.yudao.module.usermerchant.enums.ErrorCodeConstants.ILLEGAL_FORMAT;
 
 import cn.iocoder.yudao.module.usermerchant.controller.admin.groupclient.groupcar.vo.*;
 import cn.iocoder.yudao.module.usermerchant.dal.dataobject.groupclient.groupcar.GroupCarDO;
@@ -77,6 +83,16 @@ public class GroupCarController {
     public CommonResult<Boolean> importExcel(@RequestParam("file") MultipartFile file,
                                              @RequestParam(value = "updateSupport", required = false, defaultValue = "false") Boolean updateSupport) throws Exception {
         List<GroupCarImportExcelVO> list = ExcelUtils.read(file, GroupCarImportExcelVO.class);
+        // 校验是否为空
+        if (CollectionUtils.isEmpty(list)) {
+            throw new ServiceException(EMPTY_LIST);
+        }
+
+        // 校验第一条有效数据（第2行）是否有必填字段值（防止列头完全不匹配）
+        GroupCarImportExcelVO firstRow = list.get(0);
+        if (StringUtils.isBlank(firstRow.getName())) {
+            throw new ServiceException(ILLEGAL_FORMAT);
+        }
         return success(groupCarService.importGroups(list, updateSupport));
     }
 
@@ -84,8 +100,17 @@ public class GroupCarController {
     @Operation(summary = "下载集团车辆导入模板")
     @PreAuthorize("@ss.hasPermission('usermerchant:group-car:import')")
     public void downloadImportTemplate(HttpServletResponse response) throws IOException {
-        List<GroupCarImportExcelVO> emptyList = Collections.emptyList();
-        ExcelUtils.write(response, "集团车辆导入模板.xlsx", "集团车辆", GroupCarImportExcelVO.class, emptyList);
+        // 构造一条示例数据（必填字段均已填写）
+        GroupCarImportExcelVO example = GroupCarImportExcelVO.builder()
+                .name("示例集团")
+                .plateNo("京A12345")
+                .plateColor("蓝")
+                .carType("轿车")
+                .bindTime(LocalDateTime.now()) // 绑定时间示例为当前时间
+                .remark("示例备注")
+                .build();
+        List<GroupCarImportExcelVO> exampleList = Collections.singletonList(example);
+        ExcelUtils.write(response, "集团车辆导入模板.xlsx", "集团车辆", GroupCarImportExcelVO.class, exampleList);
     }
 
     @GetMapping("/export")

@@ -1,5 +1,9 @@
 package cn.iocoder.yudao.module.usermerchant.controller.admin.membercenter.membertag;
 
+import cn.idev.excel.util.StringUtils;
+import cn.iocoder.yudao.framework.common.exception.ServiceException;
+import cn.iocoder.yudao.module.usermerchant.controller.admin.groupclient.groupcar.vo.GroupCarImportExcelVO;
+import com.alibaba.nacos.client.naming.utils.CollectionUtils;
 import io.swagger.v3.oas.annotations.Parameters;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -28,6 +32,7 @@ import cn.iocoder.yudao.framework.excel.core.util.ExcelUtils;
 
 import cn.iocoder.yudao.framework.apilog.core.annotation.ApiAccessLog;
 import static cn.iocoder.yudao.framework.apilog.core.enums.OperateTypeEnum.*;
+import static cn.iocoder.yudao.module.usermerchant.enums.ErrorCodeConstants.*;
 
 import cn.iocoder.yudao.module.usermerchant.controller.admin.membercenter.membertag.vo.*;
 import cn.iocoder.yudao.module.usermerchant.dal.dataobject.membercenter.membertag.MemberTagDO;
@@ -79,8 +84,13 @@ public class MemberTagController {
     @Operation(summary = "下载会员标签导入模板")
     @PreAuthorize("@ss.hasPermission('usermerchant:member-tag:import')")
     public void downloadImportTemplate(HttpServletResponse response) throws IOException {
-        List<MemberTagImportExcelVO> emptyList = Collections.emptyList();
-        ExcelUtils.write(response, "会员标签导入模板.xlsx", "会员标签", MemberTagImportExcelVO.class, emptyList);
+        MemberTagImportExcelVO example = MemberTagImportExcelVO.builder()
+                .name("示例标签")
+                .description("示例描述")
+                .status(1)
+                .build();
+        List<MemberTagImportExcelVO> exampleList = Collections.singletonList(example);
+        ExcelUtils.write(response, "会员标签导入模板.xlsx", "会员标签", MemberTagImportExcelVO.class, exampleList);
     }
 
     @GetMapping("/export")
@@ -97,18 +107,18 @@ public class MemberTagController {
     }
 
     @PutMapping("/disable")
-    @Operation(summary = "启用会员标签")
+    @Operation(summary = "禁用会员标签")
     @PreAuthorize("@ss.hasPermission('usermerchant:member-tag:disable')")
     public CommonResult<Boolean> disableMemberTag(@Valid @RequestBody MemberTagStatusReqVO reqVO) {
-        memberTagService.updateTagStatus(reqVO.getIds(), "未启用");
+        memberTagService.updateTagStatus(reqVO.getIds(), 0);
         return success(true);
     }
 
     @PutMapping("/enable")
-    @Operation(summary = "禁用会员标签")
+    @Operation(summary = "启用会员标签")
     @PreAuthorize("@ss.hasPermission('usermerchant:member-tag:enable')")
     public CommonResult<Boolean> enableMemberTag(@Valid @RequestBody MemberTagStatusReqVO reqVO) {
-        memberTagService.updateTagStatus(reqVO.getIds(), "已启用");
+        memberTagService.updateTagStatus(reqVO.getIds(), 1);
         return success(true);
     }
 

@@ -18,12 +18,35 @@ import org.apache.ibatis.annotations.Mapper;
 @Mapper
 public interface CycleReportMapper extends BaseMapperX<CycleReportDO> {
 
+//    default PageResult<CycleReportDO> selectPage(CycleReportPageReqVO reqVO) {
+//        return selectPage(reqVO, new LambdaQueryWrapperX<CycleReportDO>()
+//                .eqIfPresent(CycleReportDO::getReportCycle, reqVO.getReportCycle())
+//                .betweenIfPresent(CycleReportDO::getStatStartTime, reqVO.getStatStartTime())
+//                .betweenIfPresent(CycleReportDO::getStatEndTime, reqVO.getStatEndTime())
+//                .eqIfPresent(CycleReportDO::getReportStatus, reqVO.getReportStatus())
+//                .orderByDesc(CycleReportDO::getId));
+//    }
+
     default PageResult<CycleReportDO> selectPage(CycleReportPageReqVO reqVO) {
-        return selectPage(reqVO, new LambdaQueryWrapperX<CycleReportDO>()
-                .eqIfPresent(CycleReportDO::getReportCycle, reqVO.getReportCycle())
-                .betweenIfPresent(CycleReportDO::getStatStartTime, reqVO.getStatStartTime())
-                .betweenIfPresent(CycleReportDO::getStatEndTime, reqVO.getStatEndTime())
-                .orderByDesc(CycleReportDO::getId));
+        LambdaQueryWrapperX<CycleReportDO> wrapper = new LambdaQueryWrapperX<>();
+        // 其他筛选条件
+        wrapper.eqIfPresent(CycleReportDO::getReportCycle, reqVO.getReportCycle())
+                .eqIfPresent(CycleReportDO::getReportStatus, reqVO.getReportStatus())
+                .orderByDesc(CycleReportDO::getId);
+
+        // 时间段包含筛选：记录的时间段完全在筛选的时间段内
+        LocalDateTime filterStart = reqVO.getStatStartTime();
+        LocalDateTime filterEnd = reqVO.getStatEndTime();
+        if (filterStart != null && filterEnd != null) {
+            wrapper.ge(CycleReportDO::getStatStartTime, filterStart)
+                    .le(CycleReportDO::getStatEndTime, filterEnd);
+        } else if (filterStart != null) {
+            wrapper.ge(CycleReportDO::getStatStartTime, filterStart);
+        } else if (filterEnd != null) {
+            wrapper.le(CycleReportDO::getStatEndTime, filterEnd);
+        }
+
+        return selectPage(reqVO, wrapper);
     }
 
     List<Map<String, Object>> selectUserGrowthTrend(LocalDateTime start, LocalDateTime end, String granularity);

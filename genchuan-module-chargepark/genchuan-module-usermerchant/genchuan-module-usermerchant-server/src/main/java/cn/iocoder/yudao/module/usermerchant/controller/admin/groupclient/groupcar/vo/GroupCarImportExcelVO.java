@@ -1,6 +1,10 @@
 package cn.iocoder.yudao.module.usermerchant.controller.admin.groupclient.groupcar.vo;
 
 import cn.idev.excel.annotation.ExcelProperty;
+import cn.idev.excel.annotation.write.style.HeadFontStyle;
+import cn.iocoder.yudao.module.usermerchant.framework.annotation.ImportRequired;
+import cn.iocoder.yudao.module.usermerchant.framework.commom.utils.FlexibleTimestampDeserializer;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -17,55 +21,41 @@ import java.time.LocalDateTime;
 @Accessors(chain=false)
 public class GroupCarImportExcelVO {
 
-    @ExcelProperty("主键ID")
-    private Long id;
+    private static final short RED_COLOR = 10;
 
-    @ExcelProperty("所属集团ID")
-    private Long groupId;
-
+    @Schema(description = "集团名称")
     @ExcelProperty("集团名称")
+    @ImportRequired
+    @HeadFontStyle(color = RED_COLOR)
     private String name;
 
-    @ExcelProperty("车牌号码，唯一")
+    @Schema(description = "车牌号码")
+    @ExcelProperty("车牌号码")
+    @ImportRequired
+    @HeadFontStyle(color = RED_COLOR)
     private String plateNo;
 
-    @ExcelProperty("车牌颜色：蓝牌/黄牌/绿牌/黑牌/白牌")
+    @Schema(description = "车牌颜色")
+    @ExcelProperty("车牌颜色")
+    @ImportRequired
+    @HeadFontStyle(color = RED_COLOR)
     private String plateColor;
 
-    @ExcelProperty("车辆类型：小型车/大型车/新能源/其他")
+    @Schema(description = "车辆类型")
+    @ExcelProperty("车辆类型")
+    @ImportRequired
+    @HeadFontStyle(color = RED_COLOR)
     private String carType;
 
+    @Schema(description = "绑定时间")
     @ExcelProperty("绑定时间")
+    @JsonDeserialize(using = FlexibleTimestampDeserializer.class)
+    @ImportRequired
+    @HeadFontStyle(color = RED_COLOR)
     private LocalDateTime bindTime;
 
-    @ExcelProperty("绑定状态：待审核/已绑定/已解绑")
-    private String status;
-
-    @ExcelProperty("审核人ID")
-    private Long auditorId;
-
-    @ExcelProperty("审核时间")
-    private LocalDateTime auditTime;
-
-    @ExcelProperty("审核备注")
-    private String auditRemark;
-
+    @Schema(description = "备注")
     @ExcelProperty("备注")
     private String remark;
-
-    @ExcelProperty("备用字段1")
-    private String reserve1;
-
-    @ExcelProperty("备用字段2")
-    private String reserve2;
-
-    @ExcelProperty("创建者")
-    private String creator;
-
-    @ExcelProperty("创建时间")
-    private LocalDateTime createTime;
-
-    @ExcelProperty("更新时间")
-    private LocalDateTime updateTime;
 
 }
