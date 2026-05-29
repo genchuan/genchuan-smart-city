@@ -33,9 +33,9 @@
         FROM leave_handle
         WHERE deleted=0
         <if test="startTime != null">
-            AND create_time BETWEEN #{startTime} AND #{endTime}
+            AND leave_time BETWEEN #{startTime} AND #{endTime}
         </if>
-        ORDER BY create_time ASC
+        ORDER BY leave_time ASC
     </select>
     <select id="selectDailyLeaveCount"
             resultType="cn.iocoder.yudao.module.studentmgmt.controller.admin.basevo.ChartTrendVO">
@@ -48,5 +48,6 @@
             AND leave_time BETWEEN #{startTime} AND #{endTime}
         </if>
         GROUP BY DATE_FORMAT(leave_time, '%Y-%m-%d')
+        ORDER BY DATE_FORMAT(leave_time, '%Y-%m-%d') ASC
     </select>
 </mapper>
