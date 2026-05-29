@@ -123,6 +123,12 @@ public class EnterRecordServiceImpl implements EnterRecordService {
         myReqVO.setStationName(reqVO.getStationName());
         myReqVO.setRemark(reqVO.getRemark());
         myReqVO.setIsCorrected(reqVO.getIsCorrected());
+        myReqVO.setReserve1(reqVO.getReserve1());
+        myReqVO.setReserve2(reqVO.getReserve2());
+        myReqVO.setCreator(reqVO.getCreator());
+        myReqVO.setUpdater(reqVO.getUpdater());
+        myReqVO.setCreateTime(reqVO.getCreateTime());
+        myReqVO.setUpdateTime(reqVO.getUpdateTime());
         return getEnterRecordPage(myReqVO);
     }
 

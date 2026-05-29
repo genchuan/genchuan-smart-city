@@ -40,13 +40,16 @@
             AND g.apply_user_id = #{reqVO.applyUserId}
         </if>
         <if test="reqVO.applyTime != null and reqVO.applyTime.length == 2">
-            AND g.apply_time BETWEEN FROM_UNIXTIME(#{reqVO.applyTime[0]}) AND FROM_UNIXTIME(#{reqVO.applyTime[1]})
+            AND g.apply_time BETWEEN #{reqVO.applyTime[0]} AND #{reqVO.applyTime[1]}
         </if>
         <if test="reqVO.status != null and reqVO.status != ''">
             AND g.status = #{reqVO.status}
         </if>
         <if test="reqVO.auditUserId != null">
             AND g.audit_user_id = #{reqVO.auditUserId}
+        </if>
+        <if test="reqVO.auditUserName != null and reqVO.auditUserName != ''">
+            AND au.nickname LIKE CONCAT('%', #{reqVO.auditUserName}, '%')
         </if>
         <if test="reqVO.remark != null and reqVO.remark != ''">
             AND g.remark LIKE CONCAT('%', #{reqVO.remark}, '%')

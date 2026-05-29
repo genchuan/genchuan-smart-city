@@ -4,6 +4,8 @@ import lombok.*;
 import java.util.*;
 import io.swagger.v3.oas.annotations.media.Schema;
 import cn.iocoder.yudao.framework.common.pojo.PageParam;
+import java.time.LocalDateTime;
+import org.springframework.format.annotation.DateTimeFormat;
 
 @Schema(description = "管理后台 - 异常离场分页 Request VO")
 @Data
@@ -15,8 +17,9 @@ public class AbnormalLeavePageReqVO extends PageParam {
     @Schema(description = "异常类型：逃费离场/道闸故障离场/无牌车离场/其他")
     private String abnormalType;
 
-    @Schema(description = "识别时间，时间戳格式")
-    private String[] identifyTime;
+    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    @Schema(description = "识别时间，时间范围")
+    private LocalDateTime[] identifyTime;
 
     @Schema(description = "处置状态：未处理/处理中/已关闭")
     private String status;

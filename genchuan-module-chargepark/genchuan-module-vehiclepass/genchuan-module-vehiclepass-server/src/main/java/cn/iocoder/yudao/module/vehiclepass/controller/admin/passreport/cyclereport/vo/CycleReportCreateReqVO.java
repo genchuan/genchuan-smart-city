@@ -1,6 +1,5 @@
 package cn.iocoder.yudao.module.vehiclepass.controller.admin.passreport.cyclereport.vo;
 
-import cn.iocoder.yudao.module.vehiclepass.framework.jackson.StringLocalDateTimeDeserializer;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
@@ -21,13 +20,11 @@ public class CycleReportCreateReqVO {
     @Schema(description = "统计开始时间", required = true, example = "2026-04-01 00:00:00")
     @NotNull(message = "统计开始时间不能为空")
     @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    @JsonDeserialize(using = StringLocalDateTimeDeserializer.class)
     private LocalDateTime statStartTime;
 
     @Schema(description = "统计结束时间", required = true, example = "2026-04-30 23:59:59")
     @NotNull(message = "统计结束时间不能为空")
     @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    @JsonDeserialize(using = StringLocalDateTimeDeserializer.class)
     private LocalDateTime statEndTime;
 
     @Schema(description = "场站ID", required = true, example = "1")

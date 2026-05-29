@@ -151,6 +151,7 @@ public class CarInputServiceImpl implements CarInputService {
         updateObj.setSpaceId(reqVO.getSpaceId());
         updateObj.setAreaId(reqVO.getAreaId());
         updateObj.setRemark(reqVO.getRemark());
+        updateObj.setStatus(STATUS_PENDING_REVIEW);
         inputMapper.updateById(updateObj);
     }
 

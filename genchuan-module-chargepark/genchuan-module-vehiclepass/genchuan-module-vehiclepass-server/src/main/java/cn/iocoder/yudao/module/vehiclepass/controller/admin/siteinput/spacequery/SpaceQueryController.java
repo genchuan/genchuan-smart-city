@@ -1,7 +1,6 @@
 package cn.iocoder.yudao.module.vehiclepass.controller.admin.siteinput.spacequery;
 
 import cn.iocoder.yudao.module.vehiclepass.controller.admin.siteinput.spacequery.vo.SpaceQuerySaveReqVO;
-import cn.iocoder.yudao.module.vehiclepass.dal.dataobject.siteinput.spacequery.SpaceQueryDO;
 import org.springframework.web.bind.annotation.*;
 import jakarta.annotation.Resource;
 import org.springframework.validation.annotation.Validated;
@@ -19,7 +18,6 @@ import java.io.IOException;
 import cn.iocoder.yudao.framework.common.pojo.PageParam;
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
 import cn.iocoder.yudao.framework.common.pojo.CommonResult;
-import cn.iocoder.yudao.framework.common.util.object.BeanUtils;
 import static cn.iocoder.yudao.framework.common.pojo.CommonResult.success;
 
 import cn.iocoder.yudao.framework.excel.core.util.ExcelUtils;
@@ -113,12 +111,19 @@ public class SpaceQueryController {
     @ApiAccessLog(operateType = EXPORT)
     public void exportQueryExcel(SpaceQueryPageReqVO pageReqVO,
                                  HttpServletResponse response) throws IOException {
+
+        // 1、强制设置响应头，确保浏览器触发下载
+        response.setContentType("application/vnd.ms-excel;charset=UTF-8");
+        response.setCharacterEncoding("utf-8");
+
         pageReqVO.setPageNo(1);
         pageReqVO.setPageSize(PageParam.PAGE_SIZE_NONE);
-        List<SpaceQueryDO> list = queryService.getQueryPage(pageReqVO).getList();
+        PageResult<SpaceQueryRespVO> pageResult = queryService.getQueryPageWithJoin(pageReqVO);
+
+        response.setHeader("Content-Disposition", "attachment; filename*=");
+
         // 导出 Excel
-        ExcelUtils.write(response, "泊位查询.xls", "数据", SpaceQueryRespVO.class,
-                BeanUtils.toBean(list, SpaceQueryRespVO.class));
+        ExcelUtils.write(response, "泊位查询.xls", "数据", SpaceQueryRespVO.class, pageResult.getList());
     }
 
 }

@@ -4,10 +4,8 @@ import lombok.*;
 import java.util.*;
 import io.swagger.v3.oas.annotations.media.Schema;
 import cn.iocoder.yudao.framework.common.pojo.PageParam;
-import org.springframework.format.annotation.DateTimeFormat;
 import java.time.LocalDateTime;
-
-import static cn.iocoder.yudao.framework.common.util.date.DateUtils.FORMAT_YEAR_MONTH_DAY_HOUR_MINUTE_SECOND;
+import org.springframework.format.annotation.DateTimeFormat;
 
 @Schema(description = "管理后台 - 结果处置分页 Request VO")
 @Data
@@ -31,12 +29,9 @@ public class ResultHandlePageReqVO extends PageParam {
     @Schema(description = "处置人ID，关联芋道用户表system_user", example = "15936")
     private Long handleUserId;
 
+    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     @Schema(description = "处置时间")
-    @DateTimeFormat(pattern = FORMAT_YEAR_MONTH_DAY_HOUR_MINUTE_SECOND)
     private LocalDateTime[] handleTime;
-
-    @Schema(description = "处置时间，时间戳格式")
-    private String[] handleTimeNew;
 
     @Schema(description = "整改状态：未整改/已整改，关联字典result_handle_rectify_status", example = "2")
     private String rectifyStatus;
@@ -59,12 +54,12 @@ public class ResultHandlePageReqVO extends PageParam {
     @Schema(description = "更新者，更新人账号/姓名")
     private String updater;
 
+    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     @Schema(description = "创建时间")
-    @DateTimeFormat(pattern = FORMAT_YEAR_MONTH_DAY_HOUR_MINUTE_SECOND)
     private LocalDateTime[] createTime;
 
+    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     @Schema(description = "更新时间")
-    @DateTimeFormat(pattern = FORMAT_YEAR_MONTH_DAY_HOUR_MINUTE_SECOND)
     private LocalDateTime[] updateTime;
 
 }

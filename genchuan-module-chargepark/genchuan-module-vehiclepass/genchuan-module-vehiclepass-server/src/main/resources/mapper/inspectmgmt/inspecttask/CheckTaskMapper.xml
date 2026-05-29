@@ -28,11 +28,11 @@
         <if test="reqVO.taskType != null and reqVO.taskType != ''">
             AND t.task_type = #{reqVO.taskType}
         </if>
-        <if test="reqVO.dispatchTimeNew != null and reqVO.dispatchTimeNew.length == 2">
-            AND t.dispatch_time BETWEEN FROM_UNIXTIME(#{reqVO.dispatchTimeNew[0]}) AND FROM_UNIXTIME(#{reqVO.dispatchTimeNew[1]})
+        <if test="reqVO.dispatchTime != null and reqVO.dispatchTime.length == 2">
+            AND t.dispatch_time BETWEEN #{reqVO.dispatchTime[0]} AND #{reqVO.dispatchTime[1]}
         </if>
-        <if test="reqVO.deadlineTimeNew != null and reqVO.deadlineTimeNew.length == 2">
-            AND t.deadline_time BETWEEN FROM_UNIXTIME(#{reqVO.deadlineTimeNew[0]}) AND FROM_UNIXTIME(#{reqVO.deadlineTimeNew[1]})
+        <if test="reqVO.deadlineTime != null and reqVO.deadlineTime.length == 2">
+            AND t.deadline_time BETWEEN #{reqVO.deadlineTime[0]} AND #{reqVO.deadlineTime[1]}
         </if>
         <if test="reqVO.status != null and reqVO.status != ''">
             AND t.status = #{reqVO.status}
@@ -43,8 +43,11 @@
         <if test="reqVO.executeUserId != null">
             AND t.execute_user_id = #{reqVO.executeUserId}
         </if>
-        <if test="reqVO.finishTimeNew != null and reqVO.finishTimeNew.length == 2">
-            AND t.finish_time BETWEEN FROM_UNIXTIME(#{reqVO.finishTimeNew[0]}) AND FROM_UNIXTIME(#{reqVO.finishTimeNew[1]})
+        <if test="reqVO.executeUserName != null and reqVO.executeUserName != ''">
+            AND u.nickname LIKE CONCAT('%', #{reqVO.executeUserName}, '%')
+        </if>
+        <if test="reqVO.finishTime != null and reqVO.finishTime.length == 2">
+            AND t.finish_time BETWEEN #{reqVO.finishTime[0]} AND #{reqVO.finishTime[1]}
         </if>
         <if test="reqVO.taskProgress != null and reqVO.taskProgress != ''">
             AND t.task_progress LIKE CONCAT('%', #{reqVO.taskProgress}, '%')

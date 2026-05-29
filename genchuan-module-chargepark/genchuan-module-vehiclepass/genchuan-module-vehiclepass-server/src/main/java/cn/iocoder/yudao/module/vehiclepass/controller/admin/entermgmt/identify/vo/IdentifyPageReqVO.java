@@ -6,6 +6,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import cn.iocoder.yudao.framework.common.pojo.PageParam;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import org.springframework.format.annotation.DateTimeFormat;
 
 @Schema(description = "管理后台 - 车牌识别分页 Request VO")
 @Data
@@ -35,7 +36,8 @@ public class IdentifyPageReqVO extends PageParam {
     @Schema(description = "修正记录标记（0-未修正 / 1-已修正 / 2-已确认）", example = "0")
     private Integer isCorrected;
 
-    @Schema(description = "创建时间范围。支持 yyyy-MM-dd HH:mm:ss、yyyy-MM-ddTHH:mm:ss、10位秒级时间戳、13位毫秒时间戳；GET 请求需传两个同名 createTimeRange 参数", example = "2026-04-14 00:00:00,2026-04-14 23:59:59")
+    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    @Schema(description = "创建时间范围", example = "2026-04-14 00:00:00,2026-04-14 23:59:59")
     private LocalDateTime[] createTimeRange;
 
 }

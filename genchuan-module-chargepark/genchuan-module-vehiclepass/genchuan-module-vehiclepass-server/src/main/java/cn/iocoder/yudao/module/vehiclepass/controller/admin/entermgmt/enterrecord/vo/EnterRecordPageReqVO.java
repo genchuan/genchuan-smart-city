@@ -4,10 +4,8 @@ import lombok.*;
 import java.util.*;
 import io.swagger.v3.oas.annotations.media.Schema;
 import cn.iocoder.yudao.framework.common.pojo.PageParam;
-import org.springframework.format.annotation.DateTimeFormat;
 import java.time.LocalDateTime;
-
-import static cn.iocoder.yudao.framework.common.util.date.DateUtils.FORMAT_YEAR_MONTH_DAY_HOUR_MINUTE_SECOND;
+import org.springframework.format.annotation.DateTimeFormat;
 
 @Schema(description = "管理后台 - 入场记录分页 Request VO")
 @Data
@@ -22,8 +20,8 @@ public class EnterRecordPageReqVO extends PageParam {
     @Schema(description = "车位编号")
     private String spaceNo;
 
+    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     @Schema(description = "入场时间")
-    @DateTimeFormat(pattern = FORMAT_YEAR_MONTH_DAY_HOUR_MINUTE_SECOND)
     private LocalDateTime[] enterTime;
 
     @Schema(description = "入场小时筛选，格式如 08:00、14:30")
@@ -62,12 +60,12 @@ public class EnterRecordPageReqVO extends PageParam {
     @Schema(description = "更新者")
     private String updater;
 
+    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     @Schema(description = "创建时间")
-    @DateTimeFormat(pattern = FORMAT_YEAR_MONTH_DAY_HOUR_MINUTE_SECOND)
     private LocalDateTime[] createTime;
 
+    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     @Schema(description = "更新时间")
-    @DateTimeFormat(pattern = FORMAT_YEAR_MONTH_DAY_HOUR_MINUTE_SECOND)
     private LocalDateTime[] updateTime;
 
 }

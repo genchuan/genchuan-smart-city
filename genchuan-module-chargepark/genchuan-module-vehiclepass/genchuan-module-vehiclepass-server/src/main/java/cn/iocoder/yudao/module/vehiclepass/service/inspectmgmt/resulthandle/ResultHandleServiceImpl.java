@@ -151,6 +151,7 @@ public class ResultHandleServiceImpl implements ResultHandleService {
         // 更新整改状态
         ResultHandleDO updateObj = new ResultHandleDO();
         updateObj.setId(reqVO.getId());
+        updateObj.setStatus(STATUS_COMPLETED);
         updateObj.setRectifyStatus(reqVO.getRectifyStatus());
         handleMapper.updateById(updateObj);
     }

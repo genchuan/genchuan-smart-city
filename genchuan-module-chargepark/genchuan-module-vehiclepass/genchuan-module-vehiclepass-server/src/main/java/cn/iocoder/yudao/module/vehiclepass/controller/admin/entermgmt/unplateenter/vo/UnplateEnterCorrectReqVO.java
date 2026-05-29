@@ -3,6 +3,7 @@ package cn.iocoder.yudao.module.vehiclepass.controller.admin.entermgmt.unplateen
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.*;
 import jakarta.validation.constraints.*;
+import cn.iocoder.yudao.module.vehiclepass.constants.common.PhoneConstants;
 
 @Schema(description = "管理后台 - 无牌入场修正 Request VO")
 @Data
@@ -21,6 +22,7 @@ public class UnplateEnterCorrectReqVO {
 
     @Schema(description = "修正后联系电话", requiredMode = Schema.RequiredMode.REQUIRED, example = "13987654321")
     @NotBlank(message = "联系电话不能为空")
+    @Pattern(regexp = PhoneConstants.PHONE_REGEX, message = PhoneConstants.PHONE_REGEX_MESSAGE)
     private String phone;
 
     @Schema(description = "场站ID", requiredMode = Schema.RequiredMode.REQUIRED, example = "1")
