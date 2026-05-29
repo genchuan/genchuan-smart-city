@@ -22,6 +22,7 @@ import org.springframework.validation.annotation.Validated;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicReference;
 
 import static cn.iocoder.yudao.framework.common.exception.util.ServiceExceptionUtil.exception;
 import static cn.iocoder.yudao.module.studentmgmt.enums.ErrorCodeConstants.FUND_SYSTEM_NOT_EXISTS;
@@ -187,6 +188,7 @@ public class FundSystemServiceImpl implements FundSystemService {
         for (String grade : gradeList) {
 
             JSONObject json = new JSONObject();
+            AtomicReference<Integer> fundCount = new AtomicReference<>(0);
 
             List<JSONObject> typeList = fundSystemMapper.selectFundTypeGradeDistribution(startTime, endTime,
                     FundSystemStatusEnum.FUND_SYSTEM_STATUS_1.getStatus(), grade);
@@ -198,6 +200,7 @@ public class FundSystemServiceImpl implements FundSystemService {
                     for (DictDataRespDTO dictData : dictDataList.getData()) {
                         if (dictData.getValue().equals(item.getString("name"))) {
                             dictDataLabel = dictData.getLabel();
+                            fundCount.updateAndGet(v -> v + item.getInteger("value"));
                             break;
                         }
                     }
@@ -205,8 +208,8 @@ public class FundSystemServiceImpl implements FundSystemService {
                 item.put("name", dictDataLabel);
             });
 
-
             json.put("grade", grade);
+            json.put("fundCount", fundCount.get());
             json.put("typeDistribution", typeList);
             list.add(json);
 
