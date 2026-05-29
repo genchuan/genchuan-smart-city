@@ -8,8 +8,7 @@ import lombok.Getter;
 public enum ReconcileBillStatusEnum {
     PENDING("pending", "待对账"),
     RECONCILED("reconciled", "已对账"),
-    ABNORMAL("abnormal", "异常"),
-    CONFIRMED("confirmed", "已确认");
+    ABNORMAL("abnormal", "异常");
 
     private final String value;
     private final String label;
