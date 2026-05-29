@@ -15,6 +15,73 @@
     </update>
 
 
+<!--studentTotal (integer): 学生总数，字段：id， 统计总记录数；
+    inStudentTotal (integer): 在籍人数，字段：status，统计状态为在籍的记录数；
+    suspendStudentTotal (integer): 休学人数，字段：status，统计状态为休学的记录数；
+    quitStudentTotal (integer): 退学人数，字段：status，统计状态为退学的记录数；
+    changeStudentTotal (integer): 异动人数，字段：status，统计状态为异动的记录数；
+    -->
+<!--studentTotalYoy (decimal): 学生总数指标同比增长率，字段：create_time/id，计算方式：(当前统计周期学生总数 - 上一相邻统计周期学生总数) / 上一相邻统计周期学生总数 × 100%。
+    inStudentTotalYoy (decimal): 在籍人数指标同比增长率，字段：create_time/status"，计算方式：(当前统计周期在籍人数 - 上一相邻统计周期在籍人数) / 上一相邻统计周期在籍人数 × 100%。
+    -->
+    <!-- 学籍卡片统计（含同比） -->
+    <select id="selectStatisticCardWithYoy" resultType="java.util.Map">
+        SELECT
+        -- 当前学年
+        SUM(CASE WHEN create_time BETWEEN
+        CONCAT(YEAR(DATE_SUB(NOW(), INTERVAL 8 MONTH)), '-09-01')
+        AND DATE_ADD(CONCAT(YEAR(DATE_SUB(NOW(), INTERVAL 8 MONTH)), '-09-01'), INTERVAL 1 YEAR)
+        THEN 1 ELSE 0 END) AS curStudentTotal,
+
+        SUM(CASE WHEN create_time BETWEEN
+        CONCAT(YEAR(DATE_SUB(NOW(), INTERVAL 8 MONTH)), '-09-01')
+        AND DATE_ADD(CONCAT(YEAR(DATE_SUB(NOW(), INTERVAL 8 MONTH)), '-09-01'), INTERVAL 1 YEAR)
+        AND status = '0' THEN 1 ELSE 0 END) AS curInStudentTotal,
+
+        -- 上一学年
+        SUM(CASE WHEN create_time BETWEEN
+        CONCAT(YEAR(DATE_SUB(NOW(), INTERVAL 20 MONTH)), '-09-01')
+        AND DATE_ADD(CONCAT(YEAR(DATE_SUB(NOW(), INTERVAL 20 MONTH)), '-09-01'), INTERVAL 1 YEAR)
+        THEN 1 ELSE 0 END) AS lastStudentTotal,
+
+        SUM(CASE WHEN create_time BETWEEN
+        CONCAT(YEAR(DATE_SUB(NOW(), INTERVAL 20 MONTH)), '-09-01')
+        AND DATE_ADD(CONCAT(YEAR(DATE_SUB(NOW(), INTERVAL 20 MONTH)), '-09-01'), INTERVAL 1 YEAR)
+        AND status = '0' THEN 1 ELSE 0 END) AS lastInStudentTotal,
+
+        -- 全量统计
+        COUNT(id) AS studentTotal,
+        SUM(CASE WHEN status = '0' THEN 1 ELSE 0 END) AS inStudentTotal,
+        SUM(CASE WHEN status = '1' THEN 1 ELSE 0 END) AS suspendStudentTotal,
+        SUM(CASE WHEN status = '2' THEN 1 ELSE 0 END) AS quitStudentTotal,
+        SUM(CASE WHEN status = '3' THEN 1 ELSE 0 END) AS changeStudentTotal
+        FROM student_archive
+    </select>
+
+
+<!--学籍状态分布，各状态占比数据，字段：status，统计各状态的记录数及占比；
+    学籍异动趋势，各时段异动人数趋势，字段：change_reason/update_time，统计各时段的异动记录数；
+    -->
+    <!-- 学籍状态分布（含占比） -->
+    <select id="selectStatusDistribution" resultType="java.util.Map">
+        SELECT
+        status,
+        COUNT(*) AS count,
+        ROUND(COUNT(*) * 100.0 / SUM(COUNT(*)) OVER (), 2) AS ratio
+        FROM student_archive
+        GROUP BY status
+    </select>
+    <!-- 学籍异动趋势（按年月） -->
+    <select id="selectChangeTrend" resultType="java.util.Map">
+        SELECT
+        DATE_FORMAT(update_time, '%Y-%m') AS period,
+        COUNT(*) AS count
+        FROM student_archive
+        WHERE change_reason IS NOT NULL
+        AND change_reason != ''
+        GROUP BY DATE_FORMAT(update_time, '%Y-%m')
+        ORDER BY period
+    </select>
 
 
 </mapper>

@@ -9,6 +9,7 @@ import org.apache.ibatis.annotations.Param;
 import cn.iocoder.yudao.module.smartcampus.controller.admin.archive.vo.*;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * 学生学籍档案 Mapper
@@ -47,5 +48,11 @@ public interface ArchiveMapper extends BaseMapperX<ArchiveDO> {
 
     Integer audit(@Param("ids") List<Long> ids, @Param("processStatus") String processStatus,
                   @Param("rejectReason") String rejectReason, @Param("updater") String updater);
+
+    Map<String, Object> selectStatisticCardWithYoy();
+
+    List<Map<String, Object>> selectStatusDistribution();
+
+    List<Map<String, Object>> selectChangeTrend();
 
 }

@@ -74,4 +74,11 @@ public interface ArchiveService {
      * @return 是否成功
      */
     boolean maintain(@Valid ArchiveMaintainReqVO reqVO, LoginUser loginUser);
+
+    /**
+     * 获取统计数据
+     */
+    ArchiveStatisticCardRespVO getStatisticCard();
+    ArchiveStatisticChartRespVO getStatisticChart();
+
 }

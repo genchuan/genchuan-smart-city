@@ -10,6 +10,8 @@ import org.springframework.stereotype.Service;
 import jakarta.annotation.Resource;
 import org.springframework.validation.annotation.Validated;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.LocalDateTime;
 import java.util.*;
 import cn.iocoder.yudao.module.smartcampus.controller.admin.archive.vo.*;
@@ -95,11 +97,8 @@ public class ArchiveServiceImpl implements ArchiveService {
     public boolean audit(ArchiveAuditReqVO reqVO, LoginUser loginUser) {
 
         List<Long> ids = reqVO.getIds();
-        if (CollUtil.isEmpty(ids)) {
-            throw exception(ARCHIVE_PROCESS_STATUS_NOT_NULL);
-        }
 
-        // 1. 校验并转换审核状态
+        // 1. 转换审核状态
         String processStatusCode = reqVO.getProcessStatus();
         ArchiveProcessStatusEnum statusEnum =
                 Arrays.stream(ArchiveProcessStatusEnum.values())
@@ -179,5 +178,74 @@ public class ArchiveServiceImpl implements ArchiveService {
 
         return true;
     }
+
+    private BigDecimal calculateYoy(Integer current, Integer last) {
+        if (last == null || last == 0) {
+            return BigDecimal.ZERO;
+        }
+        return BigDecimal.valueOf(current - last)
+                .divide(BigDecimal.valueOf(last), 2, RoundingMode.HALF_UP)
+                .multiply(BigDecimal.valueOf(100));
+    }
+
+    @Override
+    public ArchiveStatisticCardRespVO getStatisticCard() {
+        Map<String, Object> map = archiveMapper.selectStatisticCardWithYoy();
+
+        ArchiveStatisticCardRespVO vo = new ArchiveStatisticCardRespVO();
+
+        vo.setStudentTotal(((Number) map.get("studentTotal")).intValue());
+        vo.setInStudentTotal(((Number) map.get("inStudentTotal")).intValue());
+        vo.setSuspendStudentTotal(((Number) map.get("suspendStudentTotal")).intValue());
+        vo.setQuitStudentTotal(((Number) map.get("quitStudentTotal")).intValue());
+        vo.setChangeStudentTotal(((Number) map.get("changeStudentTotal")).intValue());
+
+        vo.setStudentTotalYoy(calculateYoy(
+                ((Number) map.get("curStudentTotal")).intValue(),
+                ((Number) map.get("lastStudentTotal")).intValue()
+        ));
+
+        vo.setInStudentTotalYoy(calculateYoy(
+                ((Number) map.get("curInStudentTotal")).intValue(),
+                ((Number) map.get("lastInStudentTotal")).intValue()
+        ));
+
+        return vo;
+    }
+
+    @Override
+    public ArchiveStatisticChartRespVO getStatisticChart() {
+        ArchiveStatisticChartRespVO respVO = new ArchiveStatisticChartRespVO();
+
+        // ===== 1. 学籍状态分布 =====
+        List<Map<String, Object>> statusList = archiveMapper.selectStatusDistribution();
+        respVO.setStatusPieList(statusList.stream().map(map -> {
+            ArchiveStatisticChartRespVO.StatusPieVO vo =
+                    new ArchiveStatisticChartRespVO.StatusPieVO();
+
+            String status = (String) map.get("status");
+            vo.setStatus(status);
+            vo.setStatusName(ArchiveStatusEnum.getNameByKey(status));
+            vo.setCount(((Number) map.get("count")).intValue());
+
+            vo.setRatio((BigDecimal) map.get("ratio"));
+
+            return vo;
+        }).toList());
+
+        // ===== 2. 异动趋势 =====
+        List<Map<String, Object>> trendList = archiveMapper.selectChangeTrend();
+        respVO.setChangeTrendList(trendList.stream().map(map -> {
+            ArchiveStatisticChartRespVO.ChangeTrendVO vo =
+                    new ArchiveStatisticChartRespVO.ChangeTrendVO();
+
+            vo.setPeriod((String) map.get("period"));
+            vo.setCount(((Number) map.get("count")).intValue());
+            return vo;
+        }).toList());
+
+        return respVO;
+    }
+
 
 }

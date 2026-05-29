@@ -137,5 +137,18 @@ public class ArchiveController {
         return success(success);
     }
 
+    @GetMapping("/statistic/card")
+    @Operation(summary = "学籍卡片统计（含同比）")
+    @PreAuthorize("@ss.hasPermission('smartcampus:student-archive:query')")
+    public CommonResult<ArchiveStatisticCardRespVO> getStatisticCard() {
+        return success(archiveService.getStatisticCard());
+    }
+
+    @GetMapping("/statistic/chart")
+    @Operation(summary = "学籍统计图表数据")
+    @PreAuthorize("@ss.hasPermission('smartcampus:student-archive:query')")
+    public CommonResult<ArchiveStatisticChartRespVO> getStatisticChart() {
+        return success(archiveService.getStatisticChart());
+    }
 
 }
