@@ -3,6 +3,7 @@ package cn.iocoder.yudao.module.smartcampus.service.archive;
 import java.util.*;
 
 import cn.iocoder.yudao.framework.security.core.LoginUser;
+import cn.iocoder.yudao.module.smartcampus.controller.admin.importer.vo.ImportRespVO;
 import jakarta.validation.*;
 import cn.iocoder.yudao.module.smartcampus.controller.admin.archive.vo.*;
 import cn.iocoder.yudao.module.smartcampus.dal.dataobject.archive.ArchiveDO;
@@ -80,5 +81,7 @@ public interface ArchiveService {
      */
     ArchiveStatisticCardRespVO getStatisticCard();
     ArchiveStatisticChartRespVO getStatisticChart();
+
+    ImportRespVO<ArchiveSaveReqVO> batchImport(List<ArchiveSaveReqVO> importList);
 
 }

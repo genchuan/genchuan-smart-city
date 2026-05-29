@@ -2,18 +2,24 @@ package cn.iocoder.yudao.module.smartcampus.service.archive;
 
 import cn.hutool.core.collection.CollUtil;
 import cn.iocoder.yudao.framework.security.core.LoginUser;
+import cn.iocoder.yudao.module.smartcampus.controller.admin.importer.vo.ImportRespVO;
 import cn.iocoder.yudao.module.smartcampus.enums.ArchiveProcessStatusEnum;
 import cn.iocoder.yudao.module.smartcampus.enums.ArchiveStatusEnum;
 import com.mzt.logapi.context.LogRecordContext;
 import com.mzt.logapi.starter.annotation.LogRecord;
+import jakarta.validation.ConstraintViolation;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import jakarta.annotation.Resource;
 import org.springframework.validation.annotation.Validated;
+import jakarta.validation.Validator;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDateTime;
 import java.util.*;
+import java.util.stream.Collectors;
+
 import cn.iocoder.yudao.module.smartcampus.controller.admin.archive.vo.*;
 import cn.iocoder.yudao.module.smartcampus.dal.dataobject.archive.ArchiveDO;
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
@@ -32,6 +38,7 @@ import static cn.iocoder.yudao.module.smartcampus.enums.LogRecordConstants.*;
  */
 @Service
 @Validated
+@Slf4j
 public class ArchiveServiceImpl implements ArchiveService {
 
     @Resource
@@ -245,6 +252,79 @@ public class ArchiveServiceImpl implements ArchiveService {
         }).toList());
 
         return respVO;
+    }
+
+    @Resource
+    private Validator validator;
+
+    @Override
+    public ImportRespVO<ArchiveSaveReqVO> batchImport(List<ArchiveSaveReqVO> importList) {
+        if (CollUtil.isEmpty(importList)) {
+            return ImportRespVO.empty();
+        }
+
+        List<ArchiveSaveReqVO> successList = new ArrayList<>();
+        List<ImportRespVO.ImportErrorItem> errorList = new ArrayList<>();
+
+        int rowIndex = 1;
+
+        for (ArchiveSaveReqVO vo : importList) {
+            rowIndex++;
+
+            Map<String, Object> rawData = new LinkedHashMap<>();
+            rawData.put("studentNo", vo.getStudentNo());
+            rawData.put("name", vo.getName());
+            rawData.put("idCard", vo.getIdCard());
+
+            try {
+                Set<ConstraintViolation<ArchiveSaveReqVO>> violations =
+                        validator.validate(vo);
+
+                if (!violations.isEmpty()) {
+                    String errorMsg = violations.stream()
+                            .map(v -> v.getPropertyPath() + ": " + v.getMessage())
+                            .collect(Collectors.joining("; "));
+                    errorList.add(new ImportRespVO.ImportErrorItem(rowIndex, errorMsg, rawData));
+                    continue;
+                }
+
+                // 校验状态合法性
+                if (ArchiveStatusEnum.getNameByKey(vo.getStatus()) == null) {
+                    errorList.add(new ImportRespVO.ImportErrorItem(
+                            rowIndex, "学籍状态非法", rawData));
+                    continue;
+                }
+
+                ArchiveDO archive = BeanUtils.toBean(vo, ArchiveDO.class);
+                archive.setId(null);
+                archive.setProcessStatus(ArchiveProcessStatusEnum.ARCHIVE_PROCESS_STATUS_1.getProcessStatus());
+                archive.setCreateTime(LocalDateTime.now());
+                archive.setUpdateTime(LocalDateTime.now());
+
+                archiveMapper.insert(archive);
+
+                vo.setId(archive.getId());
+                successList.add(vo);
+
+            } catch (Exception e) {
+                log.error("学籍导入失败，行号: {}", rowIndex, e);
+                errorList.add(new ImportRespVO.ImportErrorItem(
+                        rowIndex,
+                        e.getMessage() != null ? e.getMessage() : "导入失败",
+                        rawData
+                ));
+            }
+        }
+
+        return new ImportRespVO<>(
+                successList,
+                errorList,
+                null,
+                null,
+                successList.size(),
+                errorList.size(),
+                importList.size()
+        );
     }
 
 

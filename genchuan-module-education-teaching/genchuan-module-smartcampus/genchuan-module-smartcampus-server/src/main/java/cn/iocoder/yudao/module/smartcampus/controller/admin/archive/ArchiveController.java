@@ -1,6 +1,8 @@
 package cn.iocoder.yudao.module.smartcampus.controller.admin.archive;
 
 import cn.iocoder.yudao.framework.security.core.LoginUser;
+import cn.iocoder.yudao.module.smartcampus.framework.util.importer.ImportUtils;
+import cn.iocoder.yudao.module.smartcampus.controller.admin.importer.vo.ImportRespVO;
 import cn.iocoder.yudao.module.smartcampus.enums.ArchiveProcessStatusEnum;
 import cn.iocoder.yudao.module.smartcampus.enums.ArchiveStatusEnum;
 import org.springframework.web.bind.annotation.*;
@@ -32,6 +34,7 @@ import static cn.iocoder.yudao.framework.security.core.util.SecurityFrameworkUti
 import cn.iocoder.yudao.module.smartcampus.controller.admin.archive.vo.*;
 import cn.iocoder.yudao.module.smartcampus.dal.dataobject.archive.ArchiveDO;
 import cn.iocoder.yudao.module.smartcampus.service.archive.ArchiveService;
+import org.springframework.web.multipart.MultipartFile;
 
 @Tag(name = "智慧校园管理后台 - 学生学籍档案")
 @RestController
@@ -150,5 +153,27 @@ public class ArchiveController {
     public CommonResult<ArchiveStatisticChartRespVO> getStatisticChart() {
         return success(archiveService.getStatisticChart());
     }
+
+    @PostMapping("/import")
+    @Operation(summary = "批量导入学生学籍档案 Excel")
+    @PreAuthorize("@ss.hasPermission('smartcampus:student-archive:import')")
+    public CommonResult<ImportRespVO<ArchiveSaveReqVO>> importArchive(
+            @RequestPart("file") MultipartFile file) throws Exception {
+
+        // 1. Excel → ImportVO
+        List<ArchiveImportVO> importVOList =
+                ImportUtils.importExcelAndReturnEntity(file, ArchiveImportVO.class.getName());
+
+        // 2. ImportVO → SaveReqVO
+        List<ArchiveSaveReqVO> saveReqList = importVOList.stream()
+                .map(vo -> BeanUtils.toBean(vo, ArchiveSaveReqVO.class))
+                .toList();
+
+        // 3. 批量导入
+        ImportRespVO<ArchiveSaveReqVO> result = archiveService.batchImport(saveReqList);
+
+        return success(result);
+    }
+
 
 }
