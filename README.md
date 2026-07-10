@@ -10,6 +10,14 @@
 前端采用 Vue 3 + Vite + Element Plus + TypeScript主流技术栈，基于组合式 API 与极速构建工具打造高效开发体验，集成 Pinia状态管理替代 Vuex、Vue Router实现路由控制。
 
 ![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)
+## 🚀体验版更新：平台通用更新、客户定制更新，海量优化（2026年7月9日）
+>市场监管（明厨亮灶系统）完成业务模块     前端电子化流程闭环 + 后端高并发/大数据/安全合规加固
+
+>客户定制平台更新  城市运行管理平台、能源充电、充电停车一体化系统 海量更新。仅展示、详情咨询商务
+
+*详细更新说明*：https://page.weixin.qq.com/smartpage/p/b1_AXYAMQa6ADASOubsM2oSz0gGH88?p=hfZ2YJ
+![输入图片说明](images/202607ver.png)
+
 ## 🚀体验版更新：会员升级、限时免费会员福，创建账号即可领取！（2026年5月15日）
 > 品牌自定义、多级角色管理权限、后台支撑、数据库批量接入、硬件设备自动接入支撑等功能可联系客服。
 
